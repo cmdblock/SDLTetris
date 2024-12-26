@@ -182,8 +182,11 @@ void clearLines() {
 
 void drawScore(SDL_Renderer *renderer) {
     // 绘制分割线
+    // 设置分割线宽度为3像素
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // 白色
-    SDL_RenderDrawLine(renderer, ARENA_WIDTH * 30 + 2, 0, ARENA_WIDTH * 30 + 2, WINDOW_HEIGHT);
+    for (int i = 0; i < 3; i++) {
+        SDL_RenderDrawLine(renderer, ARENA_WIDTH * 30 + 2 + i, 0, ARENA_WIDTH * 30 + 2 + i, WINDOW_HEIGHT);
+    }
 
     // 加载字体
     TTF_Font* font = TTF_OpenFont("arial.ttf", 24);
