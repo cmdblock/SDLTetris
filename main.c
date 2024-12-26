@@ -139,11 +139,18 @@ const SDL_Color pieceColors[7] = {
 void drawPiece(SDL_Renderer *renderer, Tetromino *piece) {
     // 绘制当前方块
     SDL_Color color = pieceColors[piece->type];
+    int blockSize = 24;  // 每个小方块的实际大小
+    int gap = 6;         // 方块之间的间隔
+    
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             if (piece->shape[i][j]) {
-                SDL_Rect rect = {(piece->x + j) * 30, (piece->y + i) * 30, 30,
-                                 30};
+                SDL_Rect rect = {
+                    (piece->x + j) * (blockSize + gap) + gap, 
+                    (piece->y + i) * (blockSize + gap) + gap, 
+                    blockSize, 
+                    blockSize
+                };
                 SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
                 SDL_RenderFillRect(renderer, &rect);
             }
@@ -257,10 +264,18 @@ void drawScore(SDL_Renderer *renderer) {
 
 void drawArena(SDL_Renderer *renderer) {
     // 绘制游戏区域
+    int blockSize = 24;  // 每个小方块的实际大小
+    int gap = 6;         // 方块之间的间隔
+    
     for (int i = 0; i < ARENA_HEIGHT; i++) {
         for (int j = 0; j < ARENA_WIDTH; j++) {
             if (arena[i][j]) {
-                SDL_Rect rect = {j * 30, i * 30, 30, 30};
+                SDL_Rect rect = {
+                    j * (blockSize + gap) + gap, 
+                    i * (blockSize + gap) + gap, 
+                    blockSize, 
+                    blockSize
+                };
                 // 使用与方块类型对应的颜色
                 SDL_SetRenderDrawColor(renderer, 
                     pieceColors[arena[i][j] - 1].r,
