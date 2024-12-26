@@ -419,22 +419,22 @@ int main(int argv, char *args[]) {
             } else if (e.type == SDL_KEYDOWN) {
                 Tetromino temp = currentPiece;
                 switch (e.key.keysym.sym) {
-                case SDLK_LEFT:
+                case SDLK_a:  // A键左移
                     temp.x--;
                     if (!checkCollision(&temp))
                         currentPiece.x--;
                     break;
-                case SDLK_RIGHT:
+                case SDLK_d:  // D键右移
                     temp.x++;
                     if (!checkCollision(&temp))
                         currentPiece.x++;
                     break;
-                case SDLK_DOWN:
+                case SDLK_s:  // S键加速下落
                     temp.y++;
                     if (!checkCollision(&temp))
                         currentPiece.y++;
                     break;
-                case SDLK_UP:
+                case SDLK_w:  // W键旋转
                     // 旋转方块
                     Tetromino rotated = currentPiece;
                     for (int i = 0; i < 4; i++) {
