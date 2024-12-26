@@ -254,23 +254,23 @@ void drawScore(SDL_Renderer *renderer) {
                            ARENA_WIDTH * 30 + 1 + i, WINDOW_HEIGHT);
     }
 
-    // 加载字体文件
+    // 加载支持中文的字体文件
     // 使用24号字体大小
-    TTF_Font *font = TTF_OpenFont("arial.ttf", 24);
+    TTF_Font *font = TTF_OpenFont("simhei.ttf", 24);
     if (!font) {
         printf("Failed to load font: %s\n", TTF_GetError());
         return;
     }
 
     // 创建分数文本
-    // 使用32字符的缓冲区存储格式化后的字符串
+    // 使用UTF-8编码
     char scoreText[32];
     snprintf(scoreText, sizeof(scoreText), "分数: %d", score);
 
     // 创建表面并渲染文本
     // 使用白色（255,255,255）渲染文本
     SDL_Color textColor = {255, 255, 255, 255};
-    SDL_Surface *textSurface = TTF_RenderText_Solid(font, scoreText, textColor);
+    SDL_Surface *textSurface = TTF_RenderUTF8_Solid(font, scoreText, textColor);
     if (!textSurface) {
         TTF_CloseFont(font);
         return;
