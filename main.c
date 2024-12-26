@@ -151,6 +151,8 @@ void drawPiece(SDL_Renderer *renderer, Tetromino *piece) {
     }
 }
 
+Mix_Chunk *clearSound = NULL;  // 消除音效
+
 void clearLines() {
     int linesCleared = 0;  // 记录消除的行数
     
@@ -182,6 +184,11 @@ void clearLines() {
             // 增加消除行数计数
             linesCleared++;
         }
+    }
+    
+    // 如果有消除行，播放音效
+    if (linesCleared > 0 && clearSound) {
+        Mix_PlayChannel(-1, clearSound, 0);
     }
     
     // 根据消除的行数更新分数
@@ -287,6 +294,17 @@ int main(int argv, char *args[]) {
     Mix_Music *bgMusic = Mix_LoadMUS("background.wav");
     if (!bgMusic) {
         printf("Failed to load background music! Mix_Error: %s\n", Mix_GetError());
+        Mix_CloseAudio();
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
+    // 加载消除音效
+    clearSound = Mix_LoadWAV("clear.wav");
+    if (!clearSound) {
+        printf("Failed to load clear sound effect! Mix_Error: %s\n", Mix_GetError());
+        Mix_FreeMusic(bgMusic);
         Mix_CloseAudio();
         TTF_Quit();
         SDL_Quit();
@@ -400,6 +418,7 @@ int main(int argv, char *args[]) {
     // 停止并释放音乐资源
     Mix_HaltMusic();
     Mix_FreeMusic(bgMusic);
+    Mix_FreeChunk(clearSound);
     
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
