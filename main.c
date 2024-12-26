@@ -95,7 +95,7 @@ void lockPiece() {
                 int x = currentPiece.x + j;
                 int y = currentPiece.y + i;
                 if (y >= 0) {
-                    arena[y][x] = 1;
+                    arena[y][x] = currentPiece.type + 1; // 存储方块类型+1（0表示空）
                 }
             }
         }
@@ -122,14 +122,26 @@ void initGame() {
     newPiece();
 }
 
+// 定义每种方块类型的颜色
+const SDL_Color pieceColors[7] = {
+    {0, 255, 255, 255},   // I型：青色
+    {255, 255, 0, 255},   // O型：黄色
+    {128, 0, 128, 255},   // T型：紫色
+    {0, 255, 0, 255},     // S型：绿色
+    {255, 0, 0, 255},     // Z型：红色
+    {0, 0, 255, 255},     // J型：蓝色
+    {255, 165, 0, 255}    // L型：橙色
+};
+
 void drawPiece(SDL_Renderer *renderer, Tetromino *piece) {
     // 绘制当前方块
+    SDL_Color color = pieceColors[piece->type];
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             if (piece->shape[i][j]) {
                 SDL_Rect rect = {(piece->x + j) * 30, (piece->y + i) * 30, 30,
                                  30};
-                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
                 SDL_RenderFillRect(renderer, &rect);
             }
         }
@@ -162,7 +174,12 @@ void drawArena(SDL_Renderer *renderer) {
         for (int j = 0; j < ARENA_WIDTH; j++) {
             if (arena[i][j]) {
                 SDL_Rect rect = {j * 30, i * 30, 30, 30};
-                SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                // 使用与方块类型对应的颜色
+                SDL_SetRenderDrawColor(renderer, 
+                    pieceColors[arena[i][j] - 1].r,
+                    pieceColors[arena[i][j] - 1].g,
+                    pieceColors[arena[i][j] - 1].b,
+                    pieceColors[arena[i][j] - 1].a);
                 SDL_RenderFillRect(renderer, &rect);
             }
         }
