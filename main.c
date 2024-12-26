@@ -208,7 +208,7 @@ void drawNextPiece(SDL_Renderer *renderer) {
     if (font) {
         SDL_Color textColor = {255, 255, 255, 255};
         SDL_Surface *textSurface =
-            TTF_RenderText_Solid(font, "Next Piece:", textColor);
+            TTF_RenderUTF8_Solid(font, "下一个方块:", textColor);
         if (textSurface) {
             SDL_Texture *textTexture =
                 SDL_CreateTextureFromSurface(renderer, textSurface);
