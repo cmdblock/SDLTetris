@@ -12,18 +12,114 @@
 typedef struct {
     int x, y;
     int shape[4][4];
+    int type;
 } Tetromino;
 
 Tetromino currentPiece;
 uint8_t arena[ARENA_HEIGHT][ARENA_WIDTH];
 
+// 所有俄罗斯方块的形状
+const int tetrominoes[7][4][4] = {
+    // I型
+    {
+        {0,0,0,0},
+        {1,1,1,1},
+        {0,0,0,0},
+        {0,0,0,0}
+    },
+    // O型
+    {
+        {0,0,0,0},
+        {0,1,1,0},
+        {0,1,1,0},
+        {0,0,0,0}
+    },
+    // T型
+    {
+        {0,0,0,0},
+        {0,1,1,1},
+        {0,0,1,0},
+        {0,0,0,0}
+    },
+    // S型
+    {
+        {0,0,0,0},
+        {0,0,1,1},
+        {0,1,1,0},
+        {0,0,0,0}
+    },
+    // Z型
+    {
+        {0,0,0,0},
+        {0,1,1,0},
+        {0,0,1,1},
+        {0,0,0,0}
+    },
+    // J型
+    {
+        {0,0,0,0},
+        {0,1,0,0},
+        {0,1,1,1},
+        {0,0,0,0}
+    },
+    // L型
+    {
+        {0,0,0,0},
+        {0,0,0,1},
+        {0,1,1,1},
+        {0,0,0,0}
+    }
+};
+
+bool checkCollision(Tetromino *piece) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (piece->shape[i][j]) {
+                int x = piece->x + j;
+                int y = piece->y + i;
+                if (x < 0 || x >= ARENA_WIDTH || y >= ARENA_HEIGHT || 
+                    (y >= 0 && arena[y][x])) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+void lockPiece() {
+    // 将当前方块锁定到游戏区域
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (currentPiece.shape[i][j]) {
+                int x = currentPiece.x + j;
+                int y = currentPiece.y + i;
+                if (y >= 0) {
+                    arena[y][x] = 1;
+                }
+            }
+        }
+    }
+}
+
+void newPiece() {
+    // 随机生成新方块
+    currentPiece.type = rand() % 7;
+    memcpy(currentPiece.shape, tetrominoes[currentPiece.type], sizeof(currentPiece.shape));
+    currentPiece.x = ARENA_WIDTH / 2 - 2;
+    currentPiece.y = -2;
+    
+    if (checkCollision(&currentPiece)) {
+        // 游戏结束
+        memset(arena, 0, sizeof(arena));
+    }
+}
+
 void initGame() {
     // 初始化游戏状态
     memset(arena, 0, sizeof(arena));
-    // 初始化当前方块
-    currentPiece.x = ARENA_WIDTH / 2 - 2;
-    currentPiece.y = 0;
-    // 这里可以初始化方块的形状
+    srand(SDL_GetTicks());
+    newPiece();
 }
 
 void drawPiece(SDL_Renderer *renderer, Tetromino *piece) {
@@ -36,6 +132,26 @@ void drawPiece(SDL_Renderer *renderer, Tetromino *piece) {
                 SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
                 SDL_RenderFillRect(renderer, &rect);
             }
+        }
+    }
+}
+
+void clearLines() {
+    for (int i = ARENA_HEIGHT - 1; i >= 0; i--) {
+        bool full = true;
+        for (int j = 0; j < ARENA_WIDTH; j++) {
+            if (!arena[i][j]) {
+                full = false;
+                break;
+            }
+        }
+        if (full) {
+            // 将上面的行下移
+            for (int k = i; k > 0; k--) {
+                memcpy(arena[k], arena[k-1], ARENA_WIDTH);
+            }
+            memset(arena[0], 0, ARENA_WIDTH);
+            i++; // 重新检查当前行
         }
     }
 }
@@ -91,26 +207,54 @@ int main(int argv, char *args[]) {
     // 游戏主循环
     bool quit = false;
     SDL_Event e;
+    Uint32 lastFall = SDL_GetTicks();
     while (!quit) {
         while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) {
                 quit = true;
             } else if (e.type == SDL_KEYDOWN) {
+                Tetromino temp = currentPiece;
                 switch (e.key.keysym.sym) {
                 case SDLK_LEFT:
-                    // 左移方块
+                    temp.x--;
+                    if (!checkCollision(&temp)) currentPiece.x--;
                     break;
                 case SDLK_RIGHT:
-                    // 右移方块
+                    temp.x++;
+                    if (!checkCollision(&temp)) currentPiece.x++;
                     break;
                 case SDLK_DOWN:
-                    // 加速下落
+                    temp.y++;
+                    if (!checkCollision(&temp)) currentPiece.y++;
                     break;
                 case SDLK_UP:
                     // 旋转方块
+                    Tetromino rotated = currentPiece;
+                    for (int i = 0; i < 4; i++) {
+                        for (int j = 0; j < 4; j++) {
+                            rotated.shape[i][j] = currentPiece.shape[3 - j][i];
+                        }
+                    }
+                    if (!checkCollision(&rotated)) {
+                        currentPiece = rotated;
+                    }
                     break;
                 }
             }
+        }
+
+        // 自动下落
+        if (SDL_GetTicks() - lastFall > 500) {
+            Tetromino temp = currentPiece;
+            temp.y++;
+            if (!checkCollision(&temp)) {
+                currentPiece.y++;
+            } else {
+                lockPiece();
+                clearLines();
+                newPiece();
+            }
+            lastFall = SDL_GetTicks();
         }
 
         // 清屏
