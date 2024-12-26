@@ -4,10 +4,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 600
-#define ARENA_WIDTH 10
-#define ARENA_HEIGHT 20
+#define WINDOW_WIDTH 800    // 游戏窗口的宽度（像素）
+#define WINDOW_HEIGHT 600   // 游戏窗口的高度（像素）
+#define ARENA_WIDTH 10      // 游戏区域（俄罗斯方块下落区域）的宽度（方块数量）
+#define ARENA_HEIGHT 20     // 游戏区域的高度（方块数量）
 
 typedef struct {
     int x, y;
