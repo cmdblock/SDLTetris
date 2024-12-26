@@ -183,7 +183,7 @@ void clearLines() {
 void drawScore(SDL_Renderer *renderer) {
     // 绘制分割线
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // 白色
-    SDL_RenderDrawLine(renderer, ARENA_WIDTH * 30 + 10, 0, ARENA_WIDTH * 30 + 10, WINDOW_HEIGHT);
+    SDL_RenderDrawLine(renderer, ARENA_WIDTH * 30 + 2, 0, ARENA_WIDTH * 30 + 2, WINDOW_HEIGHT);
 
     // 加载字体
     TTF_Font* font = TTF_OpenFont("arial.ttf", 24);
@@ -213,7 +213,7 @@ void drawScore(SDL_Renderer *renderer) {
     }
 
     // 设置绘制位置（游戏区域右侧）
-    SDL_Rect destRect = {ARENA_WIDTH * 30 + 20, 50, textSurface->w, textSurface->h};
+    SDL_Rect destRect = {ARENA_WIDTH * 30 + 10, 50, textSurface->w, textSurface->h};
     SDL_RenderCopy(renderer, textTexture, NULL, &destRect);
 
     // 清理资源
