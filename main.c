@@ -290,7 +290,7 @@ void drawScore(SDL_Renderer *renderer) {
     // 创建分数文本
     // 使用32字符的缓冲区存储格式化后的字符串
     char scoreText[32];
-    snprintf(scoreText, sizeof(scoreText), "Score: %d", score);
+    snprintf(scoreText, sizeof(scoreText), "分数: %d", score);
 
     // 创建表面并渲染文本
     // 使用白色（255,255,255）渲染文本
