@@ -215,8 +215,10 @@ void drawScore(SDL_Renderer *renderer) {
         return;
     }
 
-    // 设置绘制位置（游戏区域右侧）
-    SDL_Rect destRect = {ARENA_WIDTH * 30 + 10, 50, textSurface->w, textSurface->h};
+    // 设置绘制位置（右半边屏幕中心，顶部下方10像素）
+    int rightPanelWidth = WINDOW_WIDTH - ARENA_WIDTH * 30;
+    int xPos = ARENA_WIDTH * 30 + (rightPanelWidth - textSurface->w) / 2;
+    SDL_Rect destRect = {xPos, 10, textSurface->w, textSurface->h};
     SDL_RenderCopy(renderer, textTexture, NULL, &destRect);
 
     // 清理资源
