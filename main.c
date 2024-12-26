@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
@@ -257,6 +258,34 @@ int main(int argv, char *args[]) {
         return 1;
     }
 
+    // 初始化SDL_mixer
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        printf("SDL_mixer could not initialize! Mix_Error: %s\n", Mix_GetError());
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
+    // 加载背景音乐
+    Mix_Music *bgMusic = Mix_LoadMUS("background.wav");
+    if (!bgMusic) {
+        printf("Failed to load background music! Mix_Error: %s\n", Mix_GetError());
+        Mix_CloseAudio();
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
+    // 播放背景音乐，循环播放
+    if (Mix_PlayMusic(bgMusic, -1) == -1) {
+        printf("Failed to play background music! Mix_Error: %s\n", Mix_GetError());
+        Mix_FreeMusic(bgMusic);
+        Mix_CloseAudio();
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
     SDL_Window *window = SDL_CreateWindow("Tetris", SDL_WINDOWPOS_CENTERED,
                                           SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH,
                                           WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
@@ -347,8 +376,13 @@ int main(int argv, char *args[]) {
     }
 
     // 清理资源
+    // 停止并释放音乐资源
+    Mix_HaltMusic();
+    Mix_FreeMusic(bgMusic);
+    
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    Mix_CloseAudio();
     TTF_Quit();
     SDL_Quit();
 
