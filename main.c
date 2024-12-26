@@ -152,27 +152,44 @@ void drawPiece(SDL_Renderer *renderer, Tetromino *piece) {
 }
 
 void clearLines() {
-    int linesCleared = 0;
+    int linesCleared = 0;  // 记录消除的行数
+    
+    // 从底部开始逐行检查
     for (int i = ARENA_HEIGHT - 1; i >= 0; i--) {
-        bool full = true;
+        bool full = true;  // 假设当前行是满的
+        
+        // 检查当前行是否所有格子都被占据
         for (int j = 0; j < ARENA_WIDTH; j++) {
             if (!arena[i][j]) {
-                full = false;
+                full = false;  // 发现空位，该行不满
                 break;
             }
         }
+        
+        // 如果当前行是满的
         if (full) {
-            // 将上面的行下移
+            // 将该行上面的所有行下移一行
             for (int k = i; k > 0; k--) {
                 memcpy(arena[k], arena[k-1], ARENA_WIDTH);
             }
+            
+            // 最上面一行清零
             memset(arena[0], 0, ARENA_WIDTH);
-            i++; // 重新检查当前行
+            
+            // 由于我们下移了上面的行，需要重新检查当前行
+            i++; 
+            
+            // 增加消除行数计数
             linesCleared++;
         }
     }
     
     // 根据消除的行数更新分数
+    // 使用俄罗斯方块的标准计分规则：
+    // 1行：100分
+    // 2行：300分
+    // 3行：500分
+    // 4行：800分（Tetris）
     switch (linesCleared) {
         case 1: score += 100; break;
         case 2: score += 300; break;
