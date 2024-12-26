@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 
+int score = 0;  // 分数变量
+
 #define WINDOW_WIDTH 800    // 游戏窗口的宽度（像素）
 #define WINDOW_HEIGHT 600   // 游戏窗口的高度（像素）
 #define ARENA_WIDTH 12      // 游戏区域（俄罗斯方块下落区域）的宽度（方块数量）
@@ -149,6 +151,7 @@ void drawPiece(SDL_Renderer *renderer, Tetromino *piece) {
 }
 
 void clearLines() {
+    int linesCleared = 0;
     for (int i = ARENA_HEIGHT - 1; i >= 0; i--) {
         bool full = true;
         for (int j = 0; j < ARENA_WIDTH; j++) {
@@ -164,8 +167,55 @@ void clearLines() {
             }
             memset(arena[0], 0, ARENA_WIDTH);
             i++; // 重新检查当前行
+            linesCleared++;
         }
     }
+    
+    // 根据消除的行数更新分数
+    switch (linesCleared) {
+        case 1: score += 100; break;
+        case 2: score += 300; break;
+        case 3: score += 500; break;
+        case 4: score += 800; break;
+    }
+}
+
+void drawScore(SDL_Renderer *renderer) {
+    // 加载字体
+    TTF_Font* font = TTF_OpenFont("arial.ttf", 24);
+    if (!font) {
+        printf("Failed to load font: %s\n", TTF_GetError());
+        return;
+    }
+
+    // 创建分数文本
+    char scoreText[32];
+    snprintf(scoreText, sizeof(scoreText), "Score: %d", score);
+
+    // 创建表面并渲染文本
+    SDL_Color textColor = {255, 255, 255, 255};
+    SDL_Surface* textSurface = TTF_RenderText_Solid(font, scoreText, textColor);
+    if (!textSurface) {
+        TTF_CloseFont(font);
+        return;
+    }
+
+    // 创建纹理
+    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    if (!textTexture) {
+        SDL_FreeSurface(textSurface);
+        TTF_CloseFont(font);
+        return;
+    }
+
+    // 设置绘制位置（游戏区域右侧）
+    SDL_Rect destRect = {ARENA_WIDTH * 30 + 20, 50, textSurface->w, textSurface->h};
+    SDL_RenderCopy(renderer, textTexture, NULL, &destRect);
+
+    // 清理资源
+    SDL_DestroyTexture(textTexture);
+    SDL_FreeSurface(textSurface);
+    TTF_CloseFont(font);
 }
 
 void drawArena(SDL_Renderer *renderer) {
@@ -278,9 +328,10 @@ int main(int argv, char *args[]) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        // 绘制游戏区域和当前方
+        // 绘制游戏区域、当前方块和分数
         drawArena(renderer);
         drawPiece(renderer, &currentPiece);
+        drawScore(renderer);
 
         // 更新屏幕
         SDL_RenderPresent(renderer);
