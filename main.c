@@ -217,13 +217,16 @@ void clearLines() {
 
 void drawScore(SDL_Renderer *renderer) {
     // 绘制分割线
-    // 设置分割线宽度为3像素
+    // 设置分割线宽度为3像素，在游戏区域和分数显示区域之间
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // 白色
     for (int i = 0; i < 3; i++) {
+        // 绘制垂直线，从窗口顶部到底部
+        // ARENA_WIDTH * 30 是游戏区域的宽度（每个方块30像素）
         SDL_RenderDrawLine(renderer, ARENA_WIDTH * 30 + 1 + i, 0, ARENA_WIDTH * 30 + 1 + i, WINDOW_HEIGHT);
     }
 
-    // 加载字体
+    // 加载字体文件
+    // 使用24号字体大小
     TTF_Font* font = TTF_OpenFont("arial.ttf", 24);
     if (!font) {
         printf("Failed to load font: %s\n", TTF_GetError());
@@ -231,10 +234,12 @@ void drawScore(SDL_Renderer *renderer) {
     }
 
     // 创建分数文本
+    // 使用32字符的缓冲区存储格式化后的字符串
     char scoreText[32];
     snprintf(scoreText, sizeof(scoreText), "Score: %d", score);
 
     // 创建表面并渲染文本
+    // 使用白色（255,255,255）渲染文本
     SDL_Color textColor = {255, 255, 255, 255};
     SDL_Surface* textSurface = TTF_RenderText_Solid(font, scoreText, textColor);
     if (!textSurface) {
@@ -243,6 +248,7 @@ void drawScore(SDL_Renderer *renderer) {
     }
 
     // 创建纹理
+    // 将表面转换为纹理以便渲染
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
     if (!textTexture) {
         SDL_FreeSurface(textSurface);
@@ -250,13 +256,18 @@ void drawScore(SDL_Renderer *renderer) {
         return;
     }
 
-    // 设置绘制位置（右半边屏幕中心，顶部下方10像素）
-    int rightPanelWidth = (WINDOW_WIDTH - ARENA_WIDTH * 30) / 2;  // 右侧面板宽度减半
+    // 设置绘制位置
+    // 计算右侧面板的宽度（窗口总宽度减去游戏区域宽度，然后除以2）
+    int rightPanelWidth = (WINDOW_WIDTH - ARENA_WIDTH * 30) / 2;  
+    // 计算x坐标：游戏区域宽度 + (右侧面板宽度 - 文本宽度)/2，实现水平居中
     int xPos = ARENA_WIDTH * 30 + (rightPanelWidth - textSurface->w) / 2;
+    // 设置绘制矩形：x坐标，y坐标（顶部下方10像素），使用文本的宽度和高度
     SDL_Rect destRect = {xPos, 10, textSurface->w, textSurface->h};
+    // 将纹理复制到渲染器
     SDL_RenderCopy(renderer, textTexture, NULL, &destRect);
 
     // 清理资源
+    // 释放纹理、表面和字体对象
     SDL_DestroyTexture(textTexture);
     SDL_FreeSurface(textSurface);
     TTF_CloseFont(font);
