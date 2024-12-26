@@ -156,39 +156,42 @@ Mix_Chunk *clearSound = NULL;  // 消除音效
 void clearLines() {
     int linesCleared = 0;  // 记录消除的行数
     
-    // 从底部开始逐行检查
+    // 先检查有多少行要消除
     for (int i = ARENA_HEIGHT - 1; i >= 0; i--) {
-        bool full = true;  // 假设当前行是满的
-        
-        // 检查当前行是否所有格子都被占据
+        bool full = true;
         for (int j = 0; j < ARENA_WIDTH; j++) {
             if (!arena[i][j]) {
-                full = false;  // 发现空位，该行不满
+                full = false;
                 break;
             }
         }
-        
-        // 如果当前行是满的
         if (full) {
-            // 将该行上面的所有行下移一行
-            for (int k = i; k > 0; k--) {
-                memcpy(arena[k], arena[k-1], ARENA_WIDTH);
-            }
-            
-            // 最上面一行清零
-            memset(arena[0], 0, ARENA_WIDTH);
-            
-            // 由于我们下移了上面的行，需要重新检查当前行
-            i++; 
-            
-            // 增加消除行数计数
             linesCleared++;
         }
     }
     
-    // 如果有消除行，播放音效
+    // 如果有消除行，先播放音效
     if (linesCleared > 0 && clearSound) {
         Mix_PlayChannel(-1, clearSound, 0);
+    }
+    
+    // 然后执行消除动画
+    for (int i = ARENA_HEIGHT - 1; i >= 0; i--) {
+        bool full = true;
+        for (int j = 0; j < ARENA_WIDTH; j++) {
+            if (!arena[i][j]) {
+                full = false;
+                break;
+            }
+        }
+        
+        if (full) {
+            for (int k = i; k > 0; k--) {
+                memcpy(arena[k], arena[k-1], ARENA_WIDTH);
+            }
+            memset(arena[0], 0, ARENA_WIDTH);
+            i++; 
+        }
     }
     
     // 根据消除的行数更新分数
