@@ -6,7 +6,7 @@
 
 #define WINDOW_WIDTH 800    // 游戏窗口的宽度（像素）
 #define WINDOW_HEIGHT 600   // 游戏窗口的高度（像素）
-#define ARENA_WIDTH 10      // 游戏区域（俄罗斯方块下落区域）的宽度（方块数量）
+#define ARENA_WIDTH 12      // 游戏区域（俄罗斯方块下落区域）的宽度（方块数量）
 #define ARENA_HEIGHT 20     // 游戏区域的高度（方块数量）
 
 typedef struct {
@@ -106,7 +106,7 @@ void newPiece() {
     // 随机生成新方块
     currentPiece.type = rand() % 7;
     memcpy(currentPiece.shape, tetrominoes[currentPiece.type], sizeof(currentPiece.shape));
-    currentPiece.x = ARENA_WIDTH / 2 - 2;
+    currentPiece.x = ARENA_WIDTH / 2 - 2;  // 初始位置居中，-2是因为方块宽度为4
     currentPiece.y = -2;
     
     if (checkCollision(&currentPiece)) {
