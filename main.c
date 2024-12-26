@@ -286,9 +286,9 @@ int main(int argv, char *args[]) {
         return 1;
     }
     
-    // 设置音量为原来的1/6
+    // 设置音量为原来的1/10
     int currentVolume = Mix_VolumeMusic(-1); // 获取当前音量（-1表示获取而不修改）
-    Mix_VolumeMusic(currentVolume / 6);     // 设置为当前音量的1/6
+    Mix_VolumeMusic(currentVolume / 10);     // 设置为当前音量的1/10
 
     SDL_Window *window = SDL_CreateWindow("Tetris", SDL_WINDOWPOS_CENTERED,
                                           SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH,
