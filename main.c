@@ -7,7 +7,7 @@
 
 int score = 0;  // 分数变量
 
-#define WINDOW_WIDTH 800    // 游戏窗口的宽度（像素）
+#define WINDOW_WIDTH 600    // 游戏窗口的宽度（像素）
 #define WINDOW_HEIGHT 600   // 游戏窗口的高度（像素）
 #define ARENA_WIDTH 12      // 游戏区域（俄罗斯方块下落区域）的宽度（方块数量）
 #define ARENA_HEIGHT 20     // 游戏区域的高度（方块数量）
@@ -217,10 +217,10 @@ void clearLines() {
 
 void drawScore(SDL_Renderer *renderer) {
     // 绘制分割线
-    // 设置分割线宽度为7像素
+    // 设置分割线宽度为3像素
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // 白色
-    for (int i = 0; i < 7; i++) {
-        SDL_RenderDrawLine(renderer, ARENA_WIDTH * 30 + 2 + i, 0, ARENA_WIDTH * 30 + 2 + i, WINDOW_HEIGHT);
+    for (int i = 0; i < 3; i++) {
+        SDL_RenderDrawLine(renderer, ARENA_WIDTH * 30 + 1 + i, 0, ARENA_WIDTH * 30 + 1 + i, WINDOW_HEIGHT);
     }
 
     // 加载字体
@@ -251,7 +251,7 @@ void drawScore(SDL_Renderer *renderer) {
     }
 
     // 设置绘制位置（右半边屏幕中心，顶部下方10像素）
-    int rightPanelWidth = WINDOW_WIDTH - ARENA_WIDTH * 30;
+    int rightPanelWidth = (WINDOW_WIDTH - ARENA_WIDTH * 30) / 2;  // 右侧面板宽度减半
     int xPos = ARENA_WIDTH * 30 + (rightPanelWidth - textSurface->w) / 2;
     SDL_Rect destRect = {xPos, 10, textSurface->w, textSurface->h};
     SDL_RenderCopy(renderer, textTexture, NULL, &destRect);
