@@ -19,6 +19,7 @@ typedef struct {
 } Tetromino;
 
 Tetromino currentPiece;
+Tetromino nextPiece;  // 存储下一个方块
 uint8_t arena[ARENA_HEIGHT][ARENA_WIDTH];
 
 // 所有俄罗斯方块的形状
@@ -106,11 +107,14 @@ void lockPiece() {
 }
 
 void newPiece() {
-    // 随机生成新方块
-    currentPiece.type = rand() % 7;
-    memcpy(currentPiece.shape, tetrominoes[currentPiece.type], sizeof(currentPiece.shape));
+    // 将下一个方块设为当前方块
+    currentPiece = nextPiece;
     currentPiece.x = ARENA_WIDTH / 2 - 2;  // 初始位置居中，-2是因为方块宽度为4
     currentPiece.y = -2;
+    
+    // 生成新的下一个方块
+    nextPiece.type = rand() % 7;
+    memcpy(nextPiece.shape, tetrominoes[nextPiece.type], sizeof(nextPiece.shape));
     
     if (checkCollision(&currentPiece)) {
         // 游戏结束
@@ -122,6 +126,11 @@ void initGame() {
     // 初始化游戏状态
     memset(arena, 0, sizeof(arena));
     srand(SDL_GetTicks());
+    
+    // 初始化第一个下一个方块
+    nextPiece.type = rand() % 7;
+    memcpy(nextPiece.shape, tetrominoes[nextPiece.type], sizeof(nextPiece.shape));
+    
     newPiece();
 }
 
@@ -212,6 +221,51 @@ void clearLines() {
         case 2: score += 300; break;
         case 3: score += 500; break;
         case 4: score += 800; break;
+    }
+}
+
+void drawNextPiece(SDL_Renderer *renderer) {
+    // 设置预览区域的位置和大小
+    int previewX = ARENA_WIDTH * 30 + 50;  // 从分割线向右偏移50像素
+    int previewY = 100;  // 在分数下方
+    int blockSize = 20;  // 预览方块的大小
+    
+    // 绘制"Next Piece"文字
+    TTF_Font* font = TTF_OpenFont("arial.ttf", 20);
+    if (font) {
+        SDL_Color textColor = {255, 255, 255, 255};
+        SDL_Surface* textSurface = TTF_RenderText_Solid(font, "Next Piece:", textColor);
+        if (textSurface) {
+            SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+            if (textTexture) {
+                SDL_Rect destRect = {previewX, previewY - 30, textSurface->w, textSurface->h};
+                SDL_RenderCopy(renderer, textTexture, NULL, &destRect);
+                SDL_DestroyTexture(textTexture);
+            }
+            SDL_FreeSurface(textSurface);
+        }
+        TTF_CloseFont(font);
+    }
+
+    // 绘制下一个方块的预览
+    SDL_Color color = pieceColors[nextPiece.type];
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (nextPiece.shape[i][j]) {
+                SDL_Rect rect = {
+                    previewX + j * blockSize,
+                    previewY + i * blockSize,
+                    blockSize,
+                    blockSize
+                };
+                SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+                SDL_RenderFillRect(renderer, &rect);
+                
+                // 绘制边框
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                SDL_RenderDrawRect(renderer, &rect);
+            }
+        }
     }
 }
 
@@ -434,10 +488,11 @@ int main(int argv, char *args[]) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        // 绘制游戏区域、当前方块和分数
+        // 绘制游戏区域、当前方块、分数和下一个方块预览
         drawArena(renderer);
         drawPiece(renderer, &currentPiece);
         drawScore(renderer);
+        drawNextPiece(renderer);
 
         // 更新屏幕
         SDL_RenderPresent(renderer);
