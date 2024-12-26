@@ -257,8 +257,8 @@ void drawScore(SDL_Renderer *renderer) {
     }
 
     // 设置绘制位置
-    // 计算右侧面板的宽度（窗口总宽度减去游戏区域宽度，然后除以2）
-    int rightPanelWidth = (WINDOW_WIDTH - ARENA_WIDTH * 30) / 2;  
+    // 计算右侧面板的宽度（窗口总宽度减去游戏区域宽度）
+    int rightPanelWidth = WINDOW_WIDTH - ARENA_WIDTH * 30;
     // 计算x坐标：游戏区域宽度 + (右侧面板宽度 - 文本宽度)/2，实现水平居中
     int xPos = ARENA_WIDTH * 30 + (rightPanelWidth - textSurface->w) / 2;
     // 设置绘制矩形：x坐标，y坐标（顶部下方10像素），使用文本的宽度和高度
