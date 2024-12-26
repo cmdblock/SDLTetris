@@ -182,9 +182,9 @@ void clearLines() {
 
 void drawScore(SDL_Renderer *renderer) {
     // 绘制分割线
-    // 设置分割线宽度为5像素
+    // 设置分割线宽度为7像素
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // 白色
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 7; i++) {
         SDL_RenderDrawLine(renderer, ARENA_WIDTH * 30 + 2 + i, 0, ARENA_WIDTH * 30 + 2 + i, WINDOW_HEIGHT);
     }
 
