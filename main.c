@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
+
 int score = 0; // 分数变量
 
 
