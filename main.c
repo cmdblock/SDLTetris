@@ -6,6 +6,7 @@
 #include <string.h>
 
 
+
 int score = 0; // 分数变量
 
 
@@ -18,13 +19,6 @@ typedef struct {
     bool visible;     // 当前是否可见（用于闪烁）
 } ClearAnimation;
 
-// 游戏状态历史记录
-typedef struct {
-    uint8_t arena[ARENA_HEIGHT][ARENA_WIDTH];
-    Tetromino currentPiece;
-    Tetromino nextPiece;
-    int score;
-} GameState;
 
 ClearAnimation clearAnim = {0}; // 消除动画状态
 GameState lastState;            // 上一个游戏状态
