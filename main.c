@@ -11,8 +11,9 @@ int score = 0; // 分数变量
 typedef struct {
     int lines[4];       // 正在消除的行号
     int count;          // 正在消除的行数
-    float alpha;        // 当前透明度
+    float timer;        // 动画计时器
     bool isAnimating;   // 是否正在播放动画
+    bool visible;       // 当前是否可见（用于闪烁）
 } ClearAnimation;
 
 ClearAnimation clearAnim = {0}; // 消除动画状态
@@ -146,9 +147,17 @@ Mix_Chunk *clearSound = NULL; // 消除音效
 
 void updateAnimation(float deltaTime) {
     if (clearAnim.isAnimating) {
-        // 更新透明度，从1到0
-        clearAnim.alpha -= deltaTime * 2.0f; // 2秒完成动画
-        if (clearAnim.alpha <= 0) {
+        // 更新计时器
+        clearAnim.timer += deltaTime;
+        
+        // 每0.1秒切换一次可见状态
+        if (clearAnim.timer >= 0.1f) {
+            clearAnim.visible = !clearAnim.visible;
+            clearAnim.timer = 0;
+        }
+        
+        // 动画持续1秒后结束
+        if (clearAnim.timer >= 1.0f) {
             // 动画结束，实际消除行
             for (int i = 0; i < clearAnim.count; i++) {
                 int line = clearAnim.lines[i];
@@ -192,7 +201,8 @@ void clearLines() {
         }
 
         // 第三步：启动动画
-        clearAnim.alpha = 1.0f;
+        clearAnim.timer = 0;
+        clearAnim.visible = true;
         clearAnim.isAnimating = true;
 
         // 第四步：根据消除的行数更新分数
@@ -342,10 +352,9 @@ void drawArena(SDL_Renderer *renderer) {
 
                 // 使用与方块类型对应的颜色
                 SDL_Color color = pieceColors[arena[i][j] - 1];
-                if (isAnimating) {
-                    // 如果是动画中的行，应用透明度
-                    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b,
-                                        (Uint8)(clearAnim.alpha * 255));
+                if (isAnimating && !clearAnim.visible) {
+                    // 如果是动画中的行且当前不可见，绘制黑色
+                    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
                 } else {
                     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b,
                                         color.a);
