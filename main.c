@@ -597,7 +597,7 @@ int main(int argv, char *args[]) {
             if (font) {
                 SDL_Color textColor = {255, 255, 255, 255};
                 SDL_Surface *textSurface =
-                    TTF_RenderUTF8_Solid(font, "保存游戏进度", textColor);
+                    TTF_RenderUTF8_Solid(font, "保存游戏", textColor);
                 if (textSurface) {
                     SDL_Texture *textTexture =
                         SDL_CreateTextureFromSurface(renderer, textSurface);
