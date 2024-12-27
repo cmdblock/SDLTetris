@@ -586,7 +586,6 @@ int main(int argv, char *args[]) {
                         SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
 
                         // 检测鼠标点击
-                        int mouseX, mouseY;
                         if (SDL_GetMouseState(&mouseX, &mouseY) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
                             if (mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
                                 mouseY >= buttonY && mouseY <= buttonY + buttonHeight) {
