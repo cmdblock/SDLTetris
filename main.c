@@ -748,7 +748,7 @@ int main(int argv, char *args[]) {
             if (font) {
                 SDL_Color textColor = {255, 255, 255, 255};
                 SDL_Surface *textSurface =
-                    TTF_RenderUTF8_Solid(font, "返回上个方块", textColor);
+                    TTF_RenderUTF8_Solid(font, "方块回退", textColor);
                 if (textSurface) {
                     SDL_Texture *textTexture =
                         SDL_CreateTextureFromSurface(renderer, textSurface);
