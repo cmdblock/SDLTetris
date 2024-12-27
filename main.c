@@ -12,6 +12,13 @@
 
 int score = 0; // 分数变量
 
+// 俄罗斯方块结构体
+typedef struct {
+    int x, y;          // 方块的位置
+    int shape[4][4];   // 方块的形状
+    int type;          // 方块的类型 (0-6)
+} Tetromino;
+
 typedef struct {
     int lines[4];     // 正在消除的行号
     int count;        // 正在消除的行数
@@ -31,13 +38,6 @@ typedef struct {
 } GameState;
 
 GameState lastState; // 上一个游戏状态
-
-// 俄罗斯方块结构体
-typedef struct {
-    int x, y;          // 方块的位置
-    int shape[4][4];   // 方块的形状
-    int type;          // 方块的类型 (0-6)
-} Tetromino;
 
 Tetromino currentPiece;  // 当前下落的方块
 Tetromino nextPiece; // 存储下一个方块
