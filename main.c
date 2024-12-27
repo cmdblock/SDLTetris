@@ -156,8 +156,8 @@ void updateAnimation(float deltaTime) {
             clearAnim.timer = 0;
         }
         
-        // 动画持续1秒后结束
-        if (clearAnim.timer >= 1.0f) {
+        // 动画持续0.5秒后结束
+        if (clearAnim.timer >= 0.5f) {
             // 动画结束，实际消除行
             for (int i = 0; i < clearAnim.count; i++) {
                 int line = clearAnim.lines[i];
