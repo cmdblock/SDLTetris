@@ -555,11 +555,11 @@ int main(int argv, char *args[]) {
                 if (textSurface) {
                     SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
                     if (textTexture) {
-                        // 计算按钮位置
+                        // 计算按钮位置，向上移动100像素
                         int buttonWidth = textSurface->w + 40;
                         int buttonHeight = textSurface->h + 20;
                         int buttonX = (WINDOW_WIDTH - buttonWidth) / 2;
-                        int buttonY = (WINDOW_HEIGHT - buttonHeight) / 2;
+                        int buttonY = (WINDOW_HEIGHT - buttonHeight) / 2 - 100;
 
                         // 获取鼠标位置
                         int mouseX, mouseY;
