@@ -67,6 +67,7 @@ bool checkCollision(Tetromino *piece) {
 }
 
 bool gameOver = false; // 全局变量，表示游戏是否结束
+bool isPaused = false; // 全局变量，表示游戏是否暂停
 
 bool lockPiece() {
     // 将当前方块锁定到游戏区域
@@ -511,12 +512,15 @@ int main(int argv, char *args[]) {
                         currentPiece = rotated;
                     }
                     break;
+                case SDLK_ESCAPE:  // Esc键暂停/继续
+                    isPaused = !isPaused;
+                    break;
                 }
             }
         }
 
-        // 自动下落
-        if (SDL_GetTicks() - lastFall > 500) {
+        // 自动下落（仅在未暂停时）
+        if (!isPaused && SDL_GetTicks() - lastFall > 500) {
             Tetromino temp = currentPiece;
             temp.y++;
             if (!checkCollision(&temp)) {
@@ -538,6 +542,63 @@ int main(int argv, char *args[]) {
         drawPiece(renderer, &currentPiece);
         drawScore(renderer);
         drawNextPiece(renderer);
+
+        // 如果游戏暂停，绘制暂停界面
+        if (isPaused && !gameOver) {
+            // 绘制半透明黑色背景
+            SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
+            SDL_Rect overlay = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
+            SDL_RenderFillRect(renderer, &overlay);
+
+            // 绘制"游戏暂停"文字
+            TTF_Font *font = TTF_OpenFont("simhei.ttf", 48);
+            if (font) {
+                SDL_Color textColor = {255, 255, 255, 255};
+                SDL_Surface *textSurface = TTF_RenderUTF8_Solid(font, "游戏暂停", textColor);
+                if (textSurface) {
+                    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+                    if (textTexture) {
+                        int textWidth = textSurface->w;
+                        int textHeight = textSurface->h;
+                        SDL_Rect textRect = {
+                            (WINDOW_WIDTH - textWidth) / 2,
+                            (WINDOW_HEIGHT - textHeight) / 2 - 50,
+                            textWidth,
+                            textHeight
+                        };
+                        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+                        SDL_DestroyTexture(textTexture);
+                    }
+                    SDL_FreeSurface(textSurface);
+                }
+                TTF_CloseFont(font);
+            }
+
+            // 绘制"按Esc继续"提示
+            font = TTF_OpenFont("simhei.ttf", 24);
+            if (font) {
+                SDL_Color textColor = {255, 255, 255, 255};
+                SDL_Surface *textSurface = TTF_RenderUTF8_Solid(font, "按 Esc 键继续游戏", textColor);
+                if (textSurface) {
+                    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+                    if (textTexture) {
+                        int textWidth = textSurface->w;
+                        int textHeight = textSurface->h;
+                        SDL_Rect textRect = {
+                            (WINDOW_WIDTH - textWidth) / 2,
+                            (WINDOW_HEIGHT - textHeight) / 2 + 50,
+                            textWidth,
+                            textHeight
+                        };
+                        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+                        SDL_DestroyTexture(textTexture);
+                    }
+                    SDL_FreeSurface(textSurface);
+                }
+                TTF_CloseFont(font);
+            }
+        }
 
         // 如果游戏结束，绘制退出按钮
         if (gameOver) {
