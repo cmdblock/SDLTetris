@@ -578,7 +578,7 @@ int main(int argv, char *args[]) {
                         int textHeight = textSurface->h;
                         SDL_Rect textRect = {
                             (WINDOW_WIDTH - textWidth) / 2,
-                            (WINDOW_HEIGHT - textHeight) / 2 - 50,
+                            (WINDOW_HEIGHT - textHeight) / 2 - 150,  // 向上移动100像素
                             textWidth,
                             textHeight
                         };
@@ -714,7 +714,7 @@ int main(int argv, char *args[]) {
                         int textHeight = textSurface->h;
                         SDL_Rect textRect = {
                             (WINDOW_WIDTH - textWidth) / 2,
-                            (WINDOW_HEIGHT - textHeight) / 2 + 50,
+                            (WINDOW_HEIGHT - textHeight) / 2 - 50,  // 向上移动100像素
                             textWidth,
                             textHeight
                         };
