@@ -7,6 +7,16 @@
 
 int score = 0; // 分数变量
 
+// 动画状态结构体
+typedef struct {
+    int lines[4];       // 正在消除的行号
+    int count;          // 正在消除的行数
+    float alpha;        // 当前透明度
+    bool isAnimating;   // 是否正在播放动画
+} ClearAnimation;
+
+ClearAnimation clearAnim = {0}; // 消除动画状态
+
 #define WINDOW_WIDTH 600  // 游戏窗口的宽度（像素）
 #define WINDOW_HEIGHT 600 // 游戏窗口的高度（像素）
 #define ARENA_WIDTH 12 // 游戏区域（俄罗斯方块下落区域）的宽度（方块数量）
@@ -134,8 +144,28 @@ void drawPiece(SDL_Renderer *renderer, Tetromino *piece) {
 
 Mix_Chunk *clearSound = NULL; // 消除音效
 
+void updateAnimation(float deltaTime) {
+    if (clearAnim.isAnimating) {
+        // 更新透明度，从1到0
+        clearAnim.alpha -= deltaTime * 2.0f; // 2秒完成动画
+        if (clearAnim.alpha <= 0) {
+            // 动画结束，实际消除行
+            for (int i = 0; i < clearAnim.count; i++) {
+                int line = clearAnim.lines[i];
+                // 将当前行以上的所有行向下移动一行
+                for (int k = line; k > 0; k--) {
+                    memcpy(arena[k], arena[k - 1], ARENA_WIDTH);
+                }
+                // 将最顶行清零
+                memset(arena[0], 0, ARENA_WIDTH);
+            }
+            clearAnim.isAnimating = false;
+        }
+    }
+}
+
 void clearLines() {
-    int linesCleared = 0; // 记录消除的行数
+    clearAnim.count = 0; // 重置消除行数
 
     // 第一步：检查有多少行需要消除
     // 从底部开始向上检查每一行
@@ -148,61 +178,38 @@ void clearLines() {
                 break;
             }
         }
-        // 如果当前行被填满，增加消除行数计数
-        if (full) {
-            linesCleared++;
+        // 如果当前行被填满，记录行号
+        if (full && clearAnim.count < 4) {
+            clearAnim.lines[clearAnim.count++] = i;
         }
     }
 
-    // 第二步：如果有消除行，播放消除音效
-    if (linesCleared > 0 && clearSound) {
-        Mix_PlayChannel(-1, clearSound, 0);
-    }
-
-    // 第三步：执行消除操作
-    // 再次从底部向上检查每一行
-    for (int i = ARENA_HEIGHT - 1; i >= 0; i--) {
-        bool full = true;
-        // 检查当前行是否被完全填满
-        for (int j = 0; j < ARENA_WIDTH; j++) {
-            if (!arena[i][j]) {
-                full = false;
-                break;
-            }
+    // 如果有消除行
+    if (clearAnim.count > 0) {
+        // 第二步：播放消除音效
+        if (clearSound) {
+            Mix_PlayChannel(-1, clearSound, 0);
         }
 
-        // 如果当前行被填满
-        if (full) {
-            // 将当前行以上的所有行向下移动一行
-            for (int k = i; k > 0; k--) {
-                memcpy(arena[k], arena[k - 1], ARENA_WIDTH);
-            }
-            // 将最顶行清零
-            memset(arena[0], 0, ARENA_WIDTH);
-            // 因为移动了行，需要重新检查当前行
-            i++;
-        }
-    }
+        // 第三步：启动动画
+        clearAnim.alpha = 1.0f;
+        clearAnim.isAnimating = true;
 
-    // 第四步：根据消除的行数更新分数
-    // 使用俄罗斯方块的标准计分规则：
-    // 1行：100分
-    // 2行：300分
-    // 3行：500分
-    // 4行：800分（Tetris）
-    switch (linesCleared) {
-    case 1:
-        score += 100;
-        break;
-    case 2:
-        score += 300;
-        break;
-    case 3:
-        score += 500;
-        break;
-    case 4:
-        score += 800;
-        break;
+        // 第四步：根据消除的行数更新分数
+        switch (clearAnim.count) {
+        case 1:
+            score += 100;
+            break;
+        case 2:
+            score += 300;
+            break;
+        case 3:
+            score += 500;
+            break;
+        case 4:
+            score += 800;
+            break;
+        }
     }
 }
 
@@ -323,11 +330,26 @@ void drawArena(SDL_Renderer *renderer) {
                 SDL_Rect rect = {j * (blockSize + gap) + gap,
                                  i * (blockSize + gap) + gap, blockSize,
                                  blockSize};
+                
+                // 检查当前行是否在动画中
+                bool isAnimating = false;
+                for (int k = 0; k < clearAnim.count; k++) {
+                    if (i == clearAnim.lines[k]) {
+                        isAnimating = true;
+                        break;
+                    }
+                }
+
                 // 使用与方块类型对应的颜色
-                SDL_SetRenderDrawColor(renderer, pieceColors[arena[i][j] - 1].r,
-                                       pieceColors[arena[i][j] - 1].g,
-                                       pieceColors[arena[i][j] - 1].b,
-                                       pieceColors[arena[i][j] - 1].a);
+                SDL_Color color = pieceColors[arena[i][j] - 1];
+                if (isAnimating) {
+                    // 如果是动画中的行，应用透明度
+                    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b,
+                                        (Uint8)(clearAnim.alpha * 255));
+                } else {
+                    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b,
+                                        color.a);
+                }
                 SDL_RenderFillRect(renderer, &rect);
             }
         }
@@ -421,7 +443,15 @@ int main(int argv, char *args[]) {
     bool quit = false;
     SDL_Event e;
     Uint32 lastFall = SDL_GetTicks();
+    Uint32 lastTime = SDL_GetTicks();
     while (!quit) {
+        // 计算时间差
+        Uint32 currentTime = SDL_GetTicks();
+        float deltaTime = (currentTime - lastTime) / 1000.0f;
+        lastTime = currentTime;
+
+        // 更新动画
+        updateAnimation(deltaTime);
         while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) {
                 quit = true;
