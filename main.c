@@ -157,7 +157,7 @@ void updateAnimation(float deltaTime) {
         }
         
         // 动画持续1秒后结束
-        if (clearAnim.timer >= 1.0f) {
+        if (clearAnim.timer >= 1.0f || clearAnim.count == 0) {
             // 动画结束，实际消除行
             for (int i = 0; i < clearAnim.count; i++) {
                 int line = clearAnim.lines[i];
@@ -169,6 +169,7 @@ void updateAnimation(float deltaTime) {
                 memset(arena[0], 0, ARENA_WIDTH);
             }
             clearAnim.isAnimating = false;
+            clearAnim.count = 0;  // 重置消除行数
         }
     }
 }
