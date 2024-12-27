@@ -714,7 +714,7 @@ int main(int argv, char *args[]) {
                         int textHeight = textSurface->h;
                         SDL_Rect textRect = {
                             (WINDOW_WIDTH - textWidth) / 2,
-                            (WINDOW_HEIGHT - textHeight) / 2 - 50,  // 向上移动50像素
+                            (WINDOW_HEIGHT - textHeight) / 2 - 170,  // 向上移动170像素，与"游戏暂停"间距30像素
                             textWidth,
                             textHeight
                         };
