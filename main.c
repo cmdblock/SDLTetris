@@ -137,28 +137,33 @@ Mix_Chunk *clearSound = NULL; // 消除音效
 void clearLines() {
     int linesCleared = 0; // 记录消除的行数
 
-    // 先检查有多少行要消除
+    // 第一步：检查有多少行需要消除
+    // 从底部开始向上检查每一行
     for (int i = ARENA_HEIGHT - 1; i >= 0; i--) {
         bool full = true;
+        // 检查当前行是否被完全填满
         for (int j = 0; j < ARENA_WIDTH; j++) {
             if (!arena[i][j]) {
                 full = false;
                 break;
             }
         }
+        // 如果当前行被填满，增加消除行数计数
         if (full) {
             linesCleared++;
         }
     }
 
-    // 如果有消除行，先播放音效
+    // 第二步：如果有消除行，播放消除音效
     if (linesCleared > 0 && clearSound) {
         Mix_PlayChannel(-1, clearSound, 0);
     }
 
-    // 然后执行消除动画
+    // 第三步：执行消除操作
+    // 再次从底部向上检查每一行
     for (int i = ARENA_HEIGHT - 1; i >= 0; i--) {
         bool full = true;
+        // 检查当前行是否被完全填满
         for (int j = 0; j < ARENA_WIDTH; j++) {
             if (!arena[i][j]) {
                 full = false;
@@ -166,16 +171,20 @@ void clearLines() {
             }
         }
 
+        // 如果当前行被填满
         if (full) {
+            // 将当前行以上的所有行向下移动一行
             for (int k = i; k > 0; k--) {
                 memcpy(arena[k], arena[k - 1], ARENA_WIDTH);
             }
+            // 将最顶行清零
             memset(arena[0], 0, ARENA_WIDTH);
+            // 因为移动了行，需要重新检查当前行
             i++;
         }
     }
 
-    // 根据消除的行数更新分数
+    // 第四步：根据消除的行数更新分数
     // 使用俄罗斯方块的标准计分规则：
     // 1行：100分
     // 2行：300分
