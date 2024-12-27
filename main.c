@@ -560,8 +560,20 @@ int main(int argv, char *args[]) {
                         int buttonX = (WINDOW_WIDTH - buttonWidth) / 2;
                         int buttonY = (WINDOW_HEIGHT - buttonHeight) / 2;
 
-                        // 绘制按钮背景
-                        SDL_SetRenderDrawColor(renderer, 64, 64, 64, 255);
+                        // 获取鼠标位置
+                        int mouseX, mouseY;
+                        SDL_GetMouseState(&mouseX, &mouseY);
+                        
+                        // 检查鼠标是否在按钮上
+                        bool isHovered = (mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
+                                        mouseY >= buttonY && mouseY <= buttonY + buttonHeight);
+
+                        // 根据鼠标悬停状态设置按钮颜色
+                        if (isHovered) {
+                            SDL_SetRenderDrawColor(renderer, 96, 96, 96, 255); // 高亮颜色
+                        } else {
+                            SDL_SetRenderDrawColor(renderer, 64, 64, 64, 255); // 正常颜色
+                        }
                         SDL_Rect buttonRect = {buttonX, buttonY, buttonWidth, buttonHeight};
                         SDL_RenderFillRect(renderer, &buttonRect);
 
