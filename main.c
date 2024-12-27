@@ -66,7 +66,9 @@ bool checkCollision(Tetromino *piece) {
     return false;
 }
 
-void lockPiece() {
+bool lockPiece() {
+    bool gameOver = false;
+    
     // 将当前方块锁定到游戏区域
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
@@ -76,10 +78,14 @@ void lockPiece() {
                 if (y >= 0) {
                     arena[y][x] =
                         currentPiece.type + 1; // 存储方块类型+1（0表示空）
+                } else {
+                    // 如果方块超出顶部，游戏结束
+                    gameOver = true;
                 }
             }
         }
     }
+    return gameOver;
 }
 
 void newPiece() {
@@ -509,7 +515,11 @@ int main(int argv, char *args[]) {
             if (!checkCollision(&temp)) {
                 currentPiece.y++;
             } else {
-                lockPiece();
+                if (lockPiece()) {
+                    // 游戏结束
+                    quit = true;
+                    break;
+                }
                 clearLines();
                 newPiece();
             }
