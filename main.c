@@ -93,6 +93,14 @@ void newPiece() {
         return;
     }
 
+    // 检查游戏场地最顶部一行是否有任何非空单元格
+    for (int j = 0; j < ARENA_WIDTH; j++) {
+        if (arena[0][j]) {
+            gameOver = true;
+            return;
+        }
+    }
+
     // 将下一个方块设为当前方块
     currentPiece = nextPiece;
     currentPiece.x = ARENA_WIDTH / 2 - 2; // 初始位置居中，-2是因为方块宽度为4
@@ -102,13 +110,6 @@ void newPiece() {
     nextPiece.type = rand() % 7;
     memcpy(nextPiece.shape, tetrominoes[nextPiece.type],
            sizeof(nextPiece.shape));
-
-    // 检查新方块是否与已有方块碰撞
-    if (checkCollision(&currentPiece)) {
-        // 如果新方块在初始位置就发生碰撞，说明游戏结束
-        gameOver = true;
-        memset(arena, 0, sizeof(arena));
-    }
 }
 
 void initGame() {
