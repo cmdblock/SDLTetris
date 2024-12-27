@@ -87,6 +87,11 @@ bool lockPiece() {
                 if (y < 0) {
                     pieceAboveTop = true;
                 }
+                
+                // 额外检查：如果方块在游戏区域左侧或右侧且y < 0，游戏结束
+                if ((x < 0 || x >= ARENA_WIDTH) && y < 0) {
+                    pieceAboveTop = true;
+                }
             }
         }
     }
