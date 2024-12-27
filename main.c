@@ -7,15 +7,6 @@
 
 int score = 0; // 分数变量
 
-// 动画状态结构体
-// 游戏状态历史记录
-typedef struct {
-    uint8_t arena[ARENA_HEIGHT][ARENA_WIDTH];
-    Tetromino currentPiece;
-    Tetromino nextPiece;
-    int score;
-} GameState;
-
 typedef struct {
     int lines[4];     // 正在消除的行号
     int count;        // 正在消除的行数
@@ -41,6 +32,14 @@ typedef struct {
 Tetromino currentPiece;
 Tetromino nextPiece; // 存储下一个方块
 uint8_t arena[ARENA_HEIGHT][ARENA_WIDTH];
+
+// 游戏状态历史记录
+typedef struct {
+    uint8_t arena[ARENA_HEIGHT][ARENA_WIDTH];
+    Tetromino currentPiece;
+    Tetromino nextPiece;
+    int score;
+} GameState;
 
 // 所有俄罗斯方块的形状
 const int tetrominoes[7][4][4] = {
