@@ -32,13 +32,14 @@ typedef struct {
 
 GameState lastState; // 上一个游戏状态
 
+// 俄罗斯方块结构体
 typedef struct {
-    int x, y;
-    int shape[4][4];
-    int type;
+    int x, y;          // 方块的位置
+    int shape[4][4];   // 方块的形状
+    int type;          // 方块的类型 (0-6)
 } Tetromino;
 
-Tetromino currentPiece;
+Tetromino currentPiece;  // 当前下落的方块
 Tetromino nextPiece; // 存储下一个方块
 uint8_t arena[ARENA_HEIGHT][ARENA_WIDTH];
 
