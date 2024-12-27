@@ -103,7 +103,7 @@ bool lockPiece() {
 
 void undoLastMove() {
     // 计算要恢复的历史状态索引
-    int restoreIndex = (historyIndex - 2 + HISTORY_SIZE) % HISTORY_SIZE;
+    int restoreIndex = (historyIndex - 1 + HISTORY_SIZE) % HISTORY_SIZE;
     
     // 恢复游戏状态
     memcpy(arena, history[restoreIndex].arena, sizeof(arena));
