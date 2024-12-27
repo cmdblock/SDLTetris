@@ -151,9 +151,10 @@ void updateAnimation(float deltaTime) {
         clearAnim.timer += deltaTime;
         
         // 每0.1秒切换一次可见状态
-        if (clearAnim.timer >= 0.1f) {
-            clearAnim.visible = !clearAnim.visible;
-            clearAnim.timer = 0;
+        if ((int)(clearAnim.timer * 10) % 2 == 0) {
+            clearAnim.visible = true;
+        } else {
+            clearAnim.visible = false;
         }
         
         // 动画持续0.5秒后结束
