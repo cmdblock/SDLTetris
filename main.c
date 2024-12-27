@@ -66,9 +66,9 @@ bool checkCollision(Tetromino *piece) {
     return false;
 }
 
+bool gameOver = false; // 全局变量，表示游戏是否结束
+
 bool lockPiece() {
-    bool gameOver = false;
-    
     // 将当前方块锁定到游戏区域
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
@@ -515,11 +515,7 @@ int main(int argv, char *args[]) {
             if (!checkCollision(&temp)) {
                 currentPiece.y++;
             } else {
-                if (lockPiece()) {
-                    // 游戏结束
-                    quit = true;
-                    break;
-                }
+                lockPiece();
                 clearLines();
                 newPiece();
             }
@@ -535,6 +531,58 @@ int main(int argv, char *args[]) {
         drawPiece(renderer, &currentPiece);
         drawScore(renderer);
         drawNextPiece(renderer);
+
+        // 如果游戏结束，绘制退出按钮
+        if (gameOver) {
+            // 绘制半透明黑色背景
+            SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
+            SDL_Rect overlay = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
+            SDL_RenderFillRect(renderer, &overlay);
+
+            // 绘制退出按钮
+            TTF_Font *font = TTF_OpenFont("simhei.ttf", 36);
+            if (font) {
+                SDL_Color textColor = {255, 255, 255, 255};
+                SDL_Surface *textSurface = TTF_RenderUTF8_Solid(font, "退出游戏", textColor);
+                if (textSurface) {
+                    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+                    if (textTexture) {
+                        // 计算按钮位置
+                        int buttonWidth = textSurface->w + 40;
+                        int buttonHeight = textSurface->h + 20;
+                        int buttonX = (WINDOW_WIDTH - buttonWidth) / 2;
+                        int buttonY = (WINDOW_HEIGHT - buttonHeight) / 2;
+
+                        // 绘制按钮背景
+                        SDL_SetRenderDrawColor(renderer, 64, 64, 64, 255);
+                        SDL_Rect buttonRect = {buttonX, buttonY, buttonWidth, buttonHeight};
+                        SDL_RenderFillRect(renderer, &buttonRect);
+
+                        // 绘制按钮边框
+                        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                        SDL_RenderDrawRect(renderer, &buttonRect);
+
+                        // 绘制按钮文字
+                        SDL_Rect textRect = {buttonX + 20, buttonY + 10, textSurface->w, textSurface->h};
+                        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+
+                        // 检测鼠标点击
+                        int mouseX, mouseY;
+                        if (SDL_GetMouseState(&mouseX, &mouseY) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+                            if (mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
+                                mouseY >= buttonY && mouseY <= buttonY + buttonHeight) {
+                                quit = true;
+                            }
+                        }
+
+                        SDL_DestroyTexture(textTexture);
+                    }
+                    SDL_FreeSurface(textSurface);
+                }
+                TTF_CloseFont(font);
+            }
+        }
 
         // 更新屏幕
         SDL_RenderPresent(renderer);
