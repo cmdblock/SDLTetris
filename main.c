@@ -89,6 +89,11 @@ bool lockPiece() {
 }
 
 void newPiece() {
+    // 如果游戏已经结束，直接返回
+    if (gameOver) {
+        return;
+    }
+
     // 将下一个方块设为当前方块
     currentPiece = nextPiece;
     currentPiece.x = ARENA_WIDTH / 2 - 2; // 初始位置居中，-2是因为方块宽度为4
@@ -101,6 +106,7 @@ void newPiece() {
 
     if (checkCollision(&currentPiece)) {
         // 游戏结束
+        gameOver = true;
         memset(arena, 0, sizeof(arena));
     }
 }
