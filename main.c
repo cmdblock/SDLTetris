@@ -5,11 +5,12 @@
 #include <stdio.h>
 #include <string.h>
 
-
+#define WINDOW_WIDTH 600  // 游戏窗口的宽度（像素）
+#define WINDOW_HEIGHT 600 // 游戏窗口的高度（像素）
+#define ARENA_WIDTH 12 // 游戏区域（俄罗斯方块下落区域）的宽度（方块数量）
+#define ARENA_HEIGHT 20 // 游戏区域的高度（方块数量）
 
 int score = 0; // 分数变量
-
-
 
 typedef struct {
     int lines[4];     // 正在消除的行号
@@ -19,14 +20,17 @@ typedef struct {
     bool visible;     // 当前是否可见（用于闪烁）
 } ClearAnimation;
 
-
 ClearAnimation clearAnim = {0}; // 消除动画状态
-GameState lastState;            // 上一个游戏状态
 
-#define WINDOW_WIDTH 600  // 游戏窗口的宽度（像素）
-#define WINDOW_HEIGHT 600 // 游戏窗口的高度（像素）
-#define ARENA_WIDTH 12 // 游戏区域（俄罗斯方块下落区域）的宽度（方块数量）
-#define ARENA_HEIGHT 20 // 游戏区域的高度（方块数量）
+// 游戏状态历史记录
+typedef struct {
+    uint8_t arena[ARENA_HEIGHT][ARENA_WIDTH];
+    Tetromino currentPiece;
+    Tetromino nextPiece;
+    int score;
+} GameState;
+
+GameState lastState; // 上一个游戏状态
 
 typedef struct {
     int x, y;
@@ -37,14 +41,6 @@ typedef struct {
 Tetromino currentPiece;
 Tetromino nextPiece; // 存储下一个方块
 uint8_t arena[ARENA_HEIGHT][ARENA_WIDTH];
-
-// 游戏状态历史记录
-typedef struct {
-    uint8_t arena[ARENA_HEIGHT][ARENA_WIDTH];
-    Tetromino currentPiece;
-    Tetromino nextPiece;
-    int score;
-} GameState;
 
 // 所有俄罗斯方块的形状
 const int tetrominoes[7][4][4] = {
@@ -633,7 +629,8 @@ int main(int argv, char *args[]) {
                         int buttonWidth = textSurface->w + 40;
                         int buttonHeight = textSurface->h + 20;
                         int buttonX = (WINDOW_WIDTH - buttonWidth) / 2;
-                        int buttonY = (WINDOW_HEIGHT - buttonHeight) / 2 - 30; // 向上移动80像素
+                        int buttonY = (WINDOW_HEIGHT - buttonHeight) / 2 -
+                                      30; // 向上移动80像素
 
                         // 获取鼠标位置
                         int mouseX, mouseY;
@@ -750,7 +747,8 @@ int main(int argv, char *args[]) {
                         int buttonWidth = textSurface->w + 40;
                         int buttonHeight = textSurface->h + 20;
                         int buttonX = (WINDOW_WIDTH - buttonWidth) / 2;
-                        int buttonY = (WINDOW_HEIGHT - buttonHeight) / 2 + 130; // 向下偏移130像素
+                        int buttonY = (WINDOW_HEIGHT - buttonHeight) / 2 +
+                                      130; // 向下偏移130像素
 
                         // 获取鼠标位置
                         int mouseX, mouseY;
@@ -771,7 +769,8 @@ int main(int argv, char *args[]) {
                         // 根据鼠标悬停状态设置按钮颜色
                         if (isHovered) {
                             // 悬停时使用更亮的紫色
-                            SDL_SetRenderDrawColor(renderer, 200, 100, 200, 255);
+                            SDL_SetRenderDrawColor(renderer, 200, 100, 200,
+                                                   255);
                         } else {
                             // 正常状态使用深紫色
                             SDL_SetRenderDrawColor(renderer, 100, 50, 100, 255);
@@ -791,10 +790,12 @@ int main(int argv, char *args[]) {
                         // 绘制按钮边框
                         if (isHovered) {
                             // 悬停时使用更亮的边框
-                            SDL_SetRenderDrawColor(renderer, 255, 150, 255, 255);
+                            SDL_SetRenderDrawColor(renderer, 255, 150, 255,
+                                                   255);
                         } else {
                             // 正常状态使用白色边框
-                            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                            SDL_SetRenderDrawColor(renderer, 255, 255, 255,
+                                                   255);
                         }
                         for (int i = 0; i < 2; i++) {
                             SDL_Rect borderRect = {
@@ -852,7 +853,8 @@ int main(int argv, char *args[]) {
                         int buttonWidth = textSurface->w + 40;
                         int buttonHeight = textSurface->h + 20;
                         int buttonX = (WINDOW_WIDTH - buttonWidth) / 2;
-                        int buttonY = (WINDOW_HEIGHT - buttonHeight) / 2 + 50; // 向下偏移80像素
+                        int buttonY = (WINDOW_HEIGHT - buttonHeight) / 2 +
+                                      50; // 向下偏移80像素
 
                         // 获取鼠标位置
                         int mouseX, mouseY;
