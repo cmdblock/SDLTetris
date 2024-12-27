@@ -80,12 +80,6 @@ bool gameOver = false; // 全局变量，表示游戏是否结束
 bool isPaused = false; // 全局变量，表示游戏是否暂停
 
 bool lockPiece() {
-    // 保存当前游戏状态
-    memcpy(lastState.arena, arena, sizeof(arena));
-    lastState.currentPiece = currentPiece;
-    lastState.nextPiece = nextPiece;
-    lastState.score = score;
-
     // 将当前方块锁定到游戏区域
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
@@ -114,6 +108,12 @@ void undoLastMove() {
 }
 
 void newPiece() {
+    // 保存当前游戏状态
+    memcpy(lastState.arena, arena, sizeof(arena));
+    lastState.currentPiece = currentPiece;
+    lastState.nextPiece = nextPiece;
+    lastState.score = score;
+
     // 如果游戏已经结束，直接返回
     if (gameOver) {
         return;
