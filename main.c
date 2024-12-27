@@ -606,7 +606,7 @@ int main(int argv, char *args[]) {
                         int buttonWidth = textSurface->w + 40;
                         int buttonHeight = textSurface->h + 20;
                         int buttonX = (WINDOW_WIDTH - buttonWidth) / 2;
-                        int buttonY = (WINDOW_HEIGHT - buttonHeight) / 2 + 50;
+                        int buttonY = (WINDOW_HEIGHT - buttonHeight) / 2 - 30; // 向上移动80像素
 
                         // 获取鼠标位置
                         int mouseX, mouseY;
