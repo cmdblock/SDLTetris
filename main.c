@@ -8,6 +8,7 @@
 int score = 0; // 分数变量
 
 
+
 typedef struct {
     int lines[4];     // 正在消除的行号
     int count;        // 正在消除的行数
