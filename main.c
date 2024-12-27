@@ -37,7 +37,9 @@ typedef struct {
     int score;
 } GameState;
 
-GameState lastState; // 上一个游戏状态
+#define HISTORY_SIZE 3 // 保存最近3个状态
+GameState history[HISTORY_SIZE]; // 历史状态数组
+int historyIndex = 0; // 当前历史状态索引
 
 Tetromino currentPiece;  // 当前下落的方块
 Tetromino nextPiece; // 存储下一个方块
@@ -100,19 +102,26 @@ bool lockPiece() {
 }
 
 void undoLastMove() {
-    // 恢复上一个游戏状态
-    memcpy(arena, lastState.arena, sizeof(arena));
-    currentPiece = lastState.currentPiece;
-    nextPiece = lastState.nextPiece;
-    score = lastState.score;
+    // 计算要恢复的历史状态索引
+    int restoreIndex = (historyIndex - 2 + HISTORY_SIZE) % HISTORY_SIZE;
+    
+    // 恢复游戏状态
+    memcpy(arena, history[restoreIndex].arena, sizeof(arena));
+    currentPiece = history[restoreIndex].currentPiece;
+    nextPiece = history[restoreIndex].nextPiece;
+    score = history[restoreIndex].score;
+    
+    // 更新历史索引
+    historyIndex = restoreIndex;
 }
 
 void newPiece() {
-    // 保存当前游戏状态
-    memcpy(lastState.arena, arena, sizeof(arena));
-    lastState.currentPiece = currentPiece;
-    lastState.nextPiece = nextPiece;
-    lastState.score = score;
+    // 保存当前游戏状态到历史记录
+    historyIndex = (historyIndex + 1) % HISTORY_SIZE;
+    memcpy(history[historyIndex].arena, arena, sizeof(arena));
+    history[historyIndex].currentPiece = currentPiece;
+    history[historyIndex].nextPiece = nextPiece;
+    history[historyIndex].score = score;
 
     // 如果游戏已经结束，直接返回
     if (gameOver) {
