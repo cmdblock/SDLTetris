@@ -70,8 +70,6 @@ bool gameOver = false; // 全局变量，表示游戏是否结束
 
 bool lockPiece() {
     // 将当前方块锁定到游戏区域
-    bool pieceAboveTop = false;
-    
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             if (currentPiece.shape[i][j]) {
@@ -82,26 +80,11 @@ bool lockPiece() {
                 if (x >= 0 && x < ARENA_WIDTH && y >= 0 && y < ARENA_HEIGHT) {
                     arena[y][x] = currentPiece.type + 1; // 存储方块类型+1（0表示空）
                 }
-                
-                // 如果方块的任何部分在顶部以上，游戏结束
-                if (y < 0) {
-                    pieceAboveTop = true;
-                }
-                
-                // 额外检查：如果方块在游戏区域左侧或右侧且y < 0，游戏结束
-                if ((x < 0 || x >= ARENA_WIDTH) && y < 0) {
-                    pieceAboveTop = true;
-                }
             }
         }
     }
     
-    // 如果方块的任何部分在顶部以上，游戏结束
-    if (pieceAboveTop) {
-        gameOver = true;
-    }
-    
-    return gameOver;
+    return false;
 }
 
 void newPiece() {
@@ -120,8 +103,9 @@ void newPiece() {
     memcpy(nextPiece.shape, tetrominoes[nextPiece.type],
            sizeof(nextPiece.shape));
 
+    // 检查新方块是否与已有方块碰撞
     if (checkCollision(&currentPiece)) {
-        // 游戏结束
+        // 如果新方块在初始位置就发生碰撞，说明游戏结束
         gameOver = true;
         memset(arena, 0, sizeof(arena));
     }
