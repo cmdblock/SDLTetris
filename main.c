@@ -575,9 +575,11 @@ int main(int argv, char *args[]) {
 
                         // 根据鼠标悬停状态设置按钮颜色
                         if (isHovered) {
-                            SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255); // 高亮颜色
+                            // 悬停时使用更亮的蓝色
+                            SDL_SetRenderDrawColor(renderer, 50, 150, 255, 255);
                         } else {
-                            SDL_SetRenderDrawColor(renderer, 96, 96, 96, 255); // 正常颜色
+                            // 正常状态使用深蓝色
+                            SDL_SetRenderDrawColor(renderer, 30, 80, 150, 255);
                         }
                         SDL_Rect buttonRect = {buttonX, buttonY, buttonWidth, buttonHeight};
                         
@@ -594,7 +596,13 @@ int main(int argv, char *args[]) {
                         SDL_RenderFillRect(renderer, &buttonRect);
 
                         // 绘制按钮边框
-                        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                        if (isHovered) {
+                            // 悬停时使用更亮的边框
+                            SDL_SetRenderDrawColor(renderer, 100, 200, 255, 255);
+                        } else {
+                            // 正常状态使用白色边框
+                            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                        }
                         for (int i = 0; i < 2; i++) {
                             SDL_Rect borderRect = {
                                 buttonRect.x + i,
@@ -603,6 +611,20 @@ int main(int argv, char *args[]) {
                                 buttonRect.h - i * 2
                             };
                             SDL_RenderDrawRect(renderer, &borderRect);
+                        }
+
+                        // 添加按钮内发光效果
+                        if (isHovered) {
+                            SDL_SetRenderDrawColor(renderer, 100, 200, 255, 50);
+                            for (int i = 0; i < 5; i++) {
+                                SDL_Rect glowRect = {
+                                    buttonRect.x + i,
+                                    buttonRect.y + i,
+                                    buttonRect.w - i * 2,
+                                    buttonRect.h - i * 2
+                                };
+                                SDL_RenderDrawRect(renderer, &glowRect);
+                            }
                         }
 
                         // 绘制按钮文字
