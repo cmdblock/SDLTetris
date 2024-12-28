@@ -80,6 +80,7 @@ bool checkCollision(Tetromino *piece) {
 
 bool gameOver = false; // 全局变量，表示游戏是否结束
 bool isPaused = false; // 全局变量，表示游戏是否暂停
+bool inStartMenu = true; // 全局变量，表示是否在开始界面
 
 bool lockPiece() {
     // 将当前方块锁定到游戏区域
@@ -521,6 +522,130 @@ int main(int argv, char *args[]) {
     Uint32 lastFall = SDL_GetTicks();
     Uint32 lastTime = SDL_GetTicks();
     while (!quit) {
+        // 处理开始界面
+        if (inStartMenu) {
+            // 清屏
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            SDL_RenderClear(renderer);
+
+            // 绘制标题
+            TTF_Font *titleFont = TTF_OpenFont("simhei.ttf", 64);
+            if (titleFont) {
+                SDL_Color textColor = {255, 255, 255, 255};
+                SDL_Surface *textSurface = TTF_RenderUTF8_Solid(titleFont, "俄罗斯方块", textColor);
+                if (textSurface) {
+                    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+                    if (textTexture) {
+                        int textWidth = textSurface->w;
+                        int textHeight = textSurface->h;
+                        SDL_Rect textRect = {
+                            (WINDOW_WIDTH - textWidth) / 2,
+                            100, // 标题距离顶部100像素
+                            textWidth, textHeight};
+                        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+                        SDL_DestroyTexture(textTexture);
+                    }
+                    SDL_FreeSurface(textSurface);
+                }
+                TTF_CloseFont(titleFont);
+            }
+
+            // 绘制开始游戏按钮
+            TTF_Font *buttonFont = TTF_OpenFont("simhei.ttf", 36);
+            if (buttonFont) {
+                SDL_Color textColor = {255, 255, 255, 255};
+                SDL_Surface *textSurface = TTF_RenderUTF8_Solid(buttonFont, "开始游戏", textColor);
+                if (textSurface) {
+                    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+                    if (textTexture) {
+                        // 计算按钮位置
+                        int buttonWidth = textSurface->w + 40;
+                        int buttonHeight = textSurface->h + 20;
+                        int buttonX = (WINDOW_WIDTH - buttonWidth) / 2;
+                        int buttonY = 300; // 按钮距离顶部300像素
+
+                        // 获取鼠标位置
+                        int mouseX, mouseY;
+                        SDL_GetMouseState(&mouseX, &mouseY);
+
+                        // 检查鼠标是否在按钮上
+                        bool isHovered = (mouseX >= buttonX &&
+                                        mouseX <= buttonX + buttonWidth &&
+                                        mouseY >= buttonY &&
+                                        mouseY <= buttonY + buttonHeight);
+
+                        // 绘制按钮阴影
+                        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 64);
+                        SDL_Rect shadowRect = {buttonX + 4, buttonY + 4,
+                                            buttonWidth, buttonHeight};
+                        SDL_RenderFillRect(renderer, &shadowRect);
+
+                        // 根据鼠标悬停状态设置按钮颜色
+                        if (isHovered) {
+                            SDL_SetRenderDrawColor(renderer, 50, 150, 255, 255);
+                        } else {
+                            SDL_SetRenderDrawColor(renderer, 30, 80, 150, 255);
+                        }
+                        SDL_Rect buttonRect = {buttonX, buttonY, buttonWidth,
+                                            buttonHeight};
+
+                        // 绘制圆角矩形
+                        for (int i = 0; i < 10; i++) {
+                            SDL_Rect roundRect = {
+                                buttonRect.x + i, buttonRect.y + i,
+                                buttonRect.w - i * 2, buttonRect.h - i * 2};
+                            SDL_RenderDrawRect(renderer, &roundRect);
+                        }
+                        SDL_RenderFillRect(renderer, &buttonRect);
+
+                        // 绘制按钮边框
+                        if (isHovered) {
+                            SDL_SetRenderDrawColor(renderer, 100, 200, 255, 255);
+                        } else {
+                            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                        }
+                        for (int i = 0; i < 2; i++) {
+                            SDL_Rect borderRect = {
+                                buttonRect.x + i, buttonRect.y + i,
+                                buttonRect.w - i * 2, buttonRect.h - i * 2};
+                            SDL_RenderDrawRect(renderer, &borderRect);
+                        }
+
+                        // 绘制按钮文字
+                        SDL_Rect textRect = {buttonX + 20, buttonY + 10,
+                                            textSurface->w, textSurface->h};
+                        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+
+                        // 检测鼠标点击
+                        if (SDL_GetMouseState(&mouseX, &mouseY) &
+                            SDL_BUTTON(SDL_BUTTON_LEFT)) {
+                            if (mouseX >= buttonX &&
+                                mouseX <= buttonX + buttonWidth &&
+                                mouseY >= buttonY &&
+                                mouseY <= buttonY + buttonHeight) {
+                                inStartMenu = false; // 进入游戏
+                            }
+                        }
+
+                        SDL_DestroyTexture(textTexture);
+                    }
+                    SDL_FreeSurface(textSurface);
+                }
+                TTF_CloseFont(buttonFont);
+            }
+
+            // 更新屏幕
+            SDL_RenderPresent(renderer);
+
+            // 处理事件
+            while (SDL_PollEvent(&e) != 0) {
+                if (e.type == SDL_QUIT) {
+                    quit = true;
+                }
+            }
+
+            continue; // 跳过游戏主逻辑
+        }
         // 计算时间差
         Uint32 currentTime = SDL_GetTicks();
         float deltaTime = (currentTime - lastTime) / 1000.0f;
