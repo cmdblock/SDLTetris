@@ -5,41 +5,45 @@
 #include <stdio.h>
 #include <string.h>
 
+// 游戏窗口尺寸
 #define WINDOW_WIDTH 600  // 游戏窗口的宽度（像素）
 #define WINDOW_HEIGHT 600 // 游戏窗口的高度（像素）
+
+// 游戏区域尺寸（以方块为单位）
 #define ARENA_WIDTH 12 // 游戏区域（俄罗斯方块下落区域）的宽度（方块数量）
 #define ARENA_HEIGHT 20 // 游戏区域的高度（方块数量）
 
-int score = 0; // 分数变量
+int score = 0; // 当前游戏分数
 
 // 俄罗斯方块结构体
 typedef struct {
-    int x, y;          // 方块的位置
-    int shape[4][4];   // 方块的形状
-    int type;          // 方块的类型 (0-6)
+    int x, y;          // 方块在游戏区域中的位置
+    int shape[4][4];   // 方块的4x4形状矩阵
+    int type;          // 方块的类型 (0-6对应7种不同形状)
 } Tetromino;
 
+// 消除动画结构体
 typedef struct {
-    int lines[4];     // 正在消除的行号
+    int lines[4];     // 正在消除的行号（最多同时消除4行）
     int count;        // 正在消除的行数
-    float timer;      // 动画计时器
-    bool isAnimating; // 是否正在播放动画
-    bool visible;     // 当前是否可见（用于闪烁）
+    float timer;      // 动画计时器，用于控制闪烁速度
+    bool isAnimating; // 是否正在播放消除动画
+    bool visible;     // 当前是否可见（用于实现闪烁效果）
 } ClearAnimation;
 
 ClearAnimation clearAnim = {0}; // 消除动画状态
 
-// 游戏状态历史记录
+// 游戏状态历史记录结构体
 typedef struct {
-    uint8_t arena[ARENA_HEIGHT][ARENA_WIDTH];
-    Tetromino currentPiece;
-    Tetromino nextPiece;
-    int score;
+    uint8_t arena[ARENA_HEIGHT][ARENA_WIDTH]; // 游戏区域状态
+    Tetromino currentPiece; // 当前方块
+    Tetromino nextPiece;    // 下一个方块
+    int score;              // 当前分数
 } GameState;
 
-#define HISTORY_SIZE 3 // 保存最近3个状态
-GameState history[HISTORY_SIZE]; // 历史状态数组
-int historyIndex = 0; // 当前历史状态索引
+#define HISTORY_SIZE 3 // 保存最近3个游戏状态
+GameState history[HISTORY_SIZE]; // 历史状态数组，用于实现撤销功能
+int historyIndex = 0; // 当前历史状态索引，用于循环记录
 
 Tetromino currentPiece;  // 当前下落的方块
 Tetromino nextPiece; // 存储下一个方块
@@ -62,26 +66,31 @@ const int tetrominoes[7][4][4] = {
     // L型
     {{0, 0, 0, 0}, {0, 0, 0, 1}, {0, 1, 1, 1}, {0, 0, 0, 0}}};
 
+// 检测方块是否发生碰撞
 bool checkCollision(Tetromino *piece) {
+    // 遍历方块的4x4矩阵
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
-            if (piece->shape[i][j]) {
-                int x = piece->x + j;
-                int y = piece->y + i;
+            if (piece->shape[i][j]) { // 如果当前位置有方块
+                int x = piece->x + j; // 计算在游戏区域中的x坐标
+                int y = piece->y + i; // 计算在游戏区域中的y坐标
+                
+                // 检查是否超出边界或与已有方块碰撞
                 if (x < 0 || x >= ARENA_WIDTH || y >= ARENA_HEIGHT ||
                     (y >= 0 && arena[y][x])) {
-                    return true;
+                    return true; // 发生碰撞
                 }
             }
         }
     }
-    return false;
+    return false; // 没有碰撞
 }
 
-bool gameOver = false; // 全局变量，表示游戏是否结束
-bool isPaused = false; // 全局变量，表示游戏是否暂停
-bool inStartMenu = true; // 全局变量，表示是否在开始界面
-bool inHelpMenu = false; // 全局变量，表示是否在帮助界面
+// 游戏状态标志
+bool gameOver = false;    // 游戏是否结束
+bool isPaused = false;    // 游戏是否暂停
+bool inStartMenu = true;  // 是否在开始菜单界面
+bool inHelpMenu = false;  // 是否在帮助说明界面
 
 bool lockPiece() {
     // 将当前方块锁定到游戏区域
@@ -149,30 +158,30 @@ void newPiece() {
            sizeof(nextPiece.shape));
 }
 
+// 初始化游戏
 void initGame() {
-    // 初始化游戏状态
+    // 清空游戏区域
     memset(arena, 0, sizeof(arena));
+    // 初始化随机数种子
     srand(SDL_GetTicks());
 
     // 尝试加载保存的游戏进度
     FILE *file = fopen("savegame.dat", "rb");
     if (file) {
-        // 加载游戏区域
-        fread(arena, sizeof(arena), 1, file);
-        // 加载当前方块
-        fread(&currentPiece, sizeof(currentPiece), 1, file);
-        // 加载下一个方块
-        fread(&nextPiece, sizeof(nextPiece), 1, file);
-        // 加载分数
-        fread(&score, sizeof(score), 1, file);
+        // 从文件加载游戏状态
+        fread(arena, sizeof(arena), 1, file);        // 加载游戏区域
+        fread(&currentPiece, sizeof(currentPiece), 1, file); // 加载当前方块
+        fread(&nextPiece, sizeof(nextPiece), 1, file);       // 加载下一个方块
+        fread(&score, sizeof(score), 1, file);               // 加载分数
         fclose(file);
     } else {
         // 如果没有保存的进度，初始化新的游戏
-        // 初始化第一个下一个方块
+        // 随机生成第一个下一个方块
         nextPiece.type = rand() % 7;
         memcpy(nextPiece.shape, tetrominoes[nextPiece.type],
                sizeof(nextPiece.shape));
 
+        // 生成第一个当前方块
         newPiece();
     }
 }
