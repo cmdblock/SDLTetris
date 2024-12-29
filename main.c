@@ -541,36 +541,42 @@ int main(int argv, char *args[]) {
             // 绘制帮助说明
             TTF_Font *font = TTF_OpenFont("simhei.ttf", 24);
             if (font) {
-                // 游戏玩法说明
+                // 游戏玩法说明文本
                 const char *helpText[] = {
                     "俄罗斯方块玩法说明：",
                     "1. 使用 A 键向左移动方块",
-                    "2. 使用 D 键向右移动方块",
+                    "2. 使用 D 键向右移动方块", 
                     "3. 使用 S 键加速下落",
                     "4. 使用 W 键旋转方块",
                     "5. 填满一行即可消除得分",
                     "6. 按 Esc 键暂停游戏"
                 };
 
+                // 初始绘制位置
                 int yPos = 100;
+                
+                // 逐行绘制说明文本
                 for (int i = 0; i < sizeof(helpText)/sizeof(helpText[0]); i++) {
-                    SDL_Color textColor = {255, 255, 255, 255};
+                    SDL_Color textColor = {255, 255, 255, 255}; // 白色文字
                     SDL_Surface *textSurface = TTF_RenderUTF8_Solid(font, helpText[i], textColor);
                     if (textSurface) {
                         SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
                         if (textTexture) {
+                            // 计算文本位置（居中显示）
                             int textWidth = textSurface->w;
                             int textHeight = textSurface->h;
                             SDL_Rect textRect = {
-                                (WINDOW_WIDTH - textWidth) / 2,
-                                yPos,
+                                (WINDOW_WIDTH - textWidth) / 2, // 水平居中
+                                yPos, // 垂直位置
                                 textWidth, textHeight};
+                            
+                            // 绘制文本
                             SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
                             SDL_DestroyTexture(textTexture);
                         }
                         SDL_FreeSurface(textSurface);
                     }
-                    yPos += 40;
+                    yPos += 40; // 每行间隔40像素
                 }
 
                 // 绘制"返回开始界面"按钮
