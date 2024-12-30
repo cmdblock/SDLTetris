@@ -818,9 +818,10 @@ int main(int argv, char *args[]) {
                 TTF_CloseFont(buttonFont);
             }
 
-            // 绘制音量调整提示
+            // 绘制音量调整提示和滑动条
             TTF_Font *volumeFont = TTF_OpenFont("simhei.ttf", 24);
             if (volumeFont) {
+                // 绘制"调整音量"文字
                 SDL_Color textColor = {255, 255, 255, 255};
                 SDL_Surface *textSurface =
                     TTF_RenderUTF8_Solid(volumeFont, "调整音量", textColor);
@@ -839,6 +840,44 @@ int main(int argv, char *args[]) {
                     }
                     SDL_FreeSurface(textSurface);
                 }
+
+                // 绘制音量滑动条
+                int sliderWidth = 300;
+                int sliderHeight = 20;
+                int sliderX = (WINDOW_WIDTH - sliderWidth) / 2;
+                int sliderY = 250; // 在文字下方
+
+                // 获取当前音量
+                int currentVolume = Mix_VolumeMusic(-1);
+                int maxVolume = 128; // SDL_mixer最大音量
+                int sliderPos = (currentVolume * sliderWidth) / maxVolume;
+
+                // 绘制滑动条背景
+                SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+                SDL_Rect sliderBgRect = {sliderX, sliderY, sliderWidth, sliderHeight};
+                SDL_RenderFillRect(renderer, &sliderBgRect);
+
+                // 绘制滑动条
+                SDL_SetRenderDrawColor(renderer, 50, 150, 255, 255);
+                SDL_Rect sliderRect = {sliderX, sliderY, sliderPos, sliderHeight};
+                SDL_RenderFillRect(renderer, &sliderRect);
+
+                // 绘制滑动条边框
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                SDL_RenderDrawRect(renderer, &sliderBgRect);
+
+                // 处理滑动条交互
+                int mouseX, mouseY;
+                Uint32 mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+                if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+                    if (mouseY >= sliderY && mouseY <= sliderY + sliderHeight &&
+                        mouseX >= sliderX && mouseX <= sliderX + sliderWidth) {
+                        // 计算新音量
+                        int newVolume = ((mouseX - sliderX) * maxVolume) / sliderWidth;
+                        Mix_VolumeMusic(newVolume);
+                    }
+                }
+
                 TTF_CloseFont(volumeFont);
             }
 
