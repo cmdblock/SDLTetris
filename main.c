@@ -680,6 +680,7 @@ int main(int argv, char *args[]) {
             continue; // 跳过游戏主逻辑
         }
 
+        // 设置界面
         if (inSettingsMenu) {
             // 清屏
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -722,7 +723,9 @@ int main(int argv, char *args[]) {
                         int buttonWidth = textSurface->w + 40;
                         int buttonHeight = textSurface->h + 20;
                         int buttonX = (WINDOW_WIDTH - buttonWidth) / 2;
-                        int buttonY = 100; // 按钮在标题下方20像素（标题高度48 + 20 = 68，标题位置20 + 68 = 88，取整100）
+                        int buttonY =
+                            100; // 按钮在标题下方20像素（标题高度48 + 20 =
+                                 // 68，标题位置20 + 68 = 88，取整100）
 
                         // 获取鼠标位置
                         int mouseX, mouseY;
@@ -797,6 +800,8 @@ int main(int argv, char *args[]) {
                 TTF_CloseFont(buttonFont);
             }
 
+            // 在“返回开始界面"按钮下方，增加一行文字，文字内容为"调整音量" AI!
+
             // 更新屏幕
             SDL_RenderPresent(renderer);
 
@@ -853,7 +858,9 @@ int main(int argv, char *args[]) {
                         int buttonWidth = textSurface->w + 40;
                         int buttonHeight = textSurface->h + 20;
                         int buttonX = (WINDOW_WIDTH - buttonWidth) / 2;
-                        int buttonY = 234; // 按钮在标题下方70像素（标题高度64 + 70 = 134，标题位置100 + 134 = 234）
+                        int buttonY =
+                            234; // 按钮在标题下方70像素（标题高度64 + 70 =
+                                 // 134，标题位置100 + 134 = 234）
 
                         // 获取鼠标位置
                         int mouseX, mouseY;
@@ -941,7 +948,8 @@ int main(int argv, char *args[]) {
                         int buttonWidth = textSurface->w + 40;
                         int buttonHeight = textSurface->h + 20;
                         int buttonX = (WINDOW_WIDTH - buttonWidth) / 2;
-                        int buttonY = 367; // 在开始游戏按钮(234)和游戏帮助按钮(500)中间
+                        int buttonY =
+                            367; // 在开始游戏按钮(234)和游戏帮助按钮(500)中间
 
                         // 获取鼠标位置
                         int mouseX, mouseY;
@@ -1312,19 +1320,23 @@ int main(int argv, char *args[]) {
                         // 检测鼠标点击
                         static Uint32 mouseDownTime = 0;
                         static bool isMouseDown = false;
-                        
-                        if (SDL_GetMouseState(&mouseX, &mouseY) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-                            if (!isMouseDown && 
-                                mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
-                                mouseY >= buttonY && mouseY <= buttonY + buttonHeight) {
+
+                        if (SDL_GetMouseState(&mouseX, &mouseY) &
+                            SDL_BUTTON(SDL_BUTTON_LEFT)) {
+                            if (!isMouseDown && mouseX >= buttonX &&
+                                mouseX <= buttonX + buttonWidth &&
+                                mouseY >= buttonY &&
+                                mouseY <= buttonY + buttonHeight) {
                                 // 记录鼠标按下时间和状态
                                 mouseDownTime = SDL_GetTicks();
                                 isMouseDown = true;
                             }
                         } else if (isMouseDown) {
                             // 鼠标抬起，检查是否在按钮区域内且时间超过100ms
-                            if (mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
-                                mouseY >= buttonY && mouseY <= buttonY + buttonHeight &&
+                            if (mouseX >= buttonX &&
+                                mouseX <= buttonX + buttonWidth &&
+                                mouseY >= buttonY &&
+                                mouseY <= buttonY + buttonHeight &&
                                 SDL_GetTicks() - mouseDownTime >= 100) {
                                 // 保存游戏进度
                                 FILE *file = fopen("savegame.dat", "wb");
@@ -1442,19 +1454,23 @@ int main(int argv, char *args[]) {
                         // 检测鼠标点击
                         static Uint32 mouseDownTime = 0;
                         static bool isMouseDown = false;
-                        
-                        if (SDL_GetMouseState(&mouseX, &mouseY) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-                            if (!isMouseDown && 
-                                mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
-                                mouseY >= buttonY && mouseY <= buttonY + buttonHeight) {
+
+                        if (SDL_GetMouseState(&mouseX, &mouseY) &
+                            SDL_BUTTON(SDL_BUTTON_LEFT)) {
+                            if (!isMouseDown && mouseX >= buttonX &&
+                                mouseX <= buttonX + buttonWidth &&
+                                mouseY >= buttonY &&
+                                mouseY <= buttonY + buttonHeight) {
                                 // 记录鼠标按下时间和状态
                                 mouseDownTime = SDL_GetTicks();
                                 isMouseDown = true;
                             }
                         } else if (isMouseDown) {
                             // 鼠标抬起，检查是否在按钮区域内且时间超过100ms
-                            if (mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
-                                mouseY >= buttonY && mouseY <= buttonY + buttonHeight &&
+                            if (mouseX >= buttonX &&
+                                mouseX <= buttonX + buttonWidth &&
+                                mouseY >= buttonY &&
+                                mouseY <= buttonY + buttonHeight &&
                                 SDL_GetTicks() - mouseDownTime >= 100) {
                                 // 执行撤销操作
                                 undoLastMove();
