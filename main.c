@@ -800,7 +800,29 @@ int main(int argv, char *args[]) {
                 TTF_CloseFont(buttonFont);
             }
 
-            // 在“返回开始界面"按钮下方，增加一行文字，文字内容为"调整音量" AI!
+            // 绘制音量调整提示
+            TTF_Font *volumeFont = TTF_OpenFont("simhei.ttf", 24);
+            if (volumeFont) {
+                SDL_Color textColor = {255, 255, 255, 255};
+                SDL_Surface *textSurface =
+                    TTF_RenderUTF8_Solid(volumeFont, "调整音量: 使用上下箭头键", textColor);
+                if (textSurface) {
+                    SDL_Texture *textTexture =
+                        SDL_CreateTextureFromSurface(renderer, textSurface);
+                    if (textTexture) {
+                        int textWidth = textSurface->w;
+                        int textHeight = textSurface->h;
+                        SDL_Rect textRect = {
+                            (WINDOW_WIDTH - textWidth) / 2,
+                            200, // 在返回按钮下方
+                            textWidth, textHeight};
+                        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+                        SDL_DestroyTexture(textTexture);
+                    }
+                    SDL_FreeSurface(textSurface);
+                }
+                TTF_CloseFont(volumeFont);
+            }
 
             // 更新屏幕
             SDL_RenderPresent(renderer);
