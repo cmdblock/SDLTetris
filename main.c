@@ -715,18 +715,22 @@ int main(int argv, char *args[]) {
                 SDL_Color textColor = {255, 255, 255, 255};
                 SDL_Surface *textSurface =
                     TTF_RenderUTF8_Solid(buttonFont, "返回开始界面", textColor);
-                
+
                 // 在按钮下方添加"调整音量"提示
                 TTF_Font *hintFont = TTF_OpenFont("simhei.ttf", 24);
                 if (hintFont) {
-                    SDL_Surface *hintSurface = TTF_RenderUTF8_Solid(hintFont, "调整音量", textColor);
+                    SDL_Surface *hintSurface =
+                        TTF_RenderUTF8_Solid(hintFont, "调整音量", textColor);
                     if (hintSurface) {
-                        SDL_Texture *hintTexture = SDL_CreateTextureFromSurface(renderer, hintSurface);
+                        SDL_Texture *hintTexture =
+                            SDL_CreateTextureFromSurface(renderer, hintSurface);
                         if (hintTexture) {
                             int hintX = (WINDOW_WIDTH - hintSurface->w) / 2;
                             int hintY = 200; // 在返回按钮下方
-                            SDL_Rect hintRect = {hintX, hintY, hintSurface->w, hintSurface->h};
-                            SDL_RenderCopy(renderer, hintTexture, NULL, &hintRect);
+                            SDL_Rect hintRect = {hintX, hintY, hintSurface->w,
+                                                 hintSurface->h};
+                            SDL_RenderCopy(renderer, hintTexture, NULL,
+                                           &hintRect);
                             SDL_DestroyTexture(hintTexture);
                         }
                         SDL_FreeSurface(hintSurface);
@@ -831,10 +835,9 @@ int main(int argv, char *args[]) {
                     if (textTexture) {
                         int textWidth = textSurface->w;
                         int textHeight = textSurface->h;
-                        SDL_Rect textRect = {
-                            (WINDOW_WIDTH - textWidth) / 2,
-                            200, // 在返回按钮下方
-                            textWidth, textHeight};
+                        SDL_Rect textRect = {(WINDOW_WIDTH - textWidth) / 2,
+                                             200, // 在返回按钮下方
+                                             textWidth, textHeight};
                         SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
                         SDL_DestroyTexture(textTexture);
                     }
@@ -854,12 +857,14 @@ int main(int argv, char *args[]) {
 
                 // 绘制滑动条背景
                 SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
-                SDL_Rect sliderBgRect = {sliderX, sliderY, sliderWidth, sliderHeight};
+                SDL_Rect sliderBgRect = {sliderX, sliderY, sliderWidth,
+                                         sliderHeight};
                 SDL_RenderFillRect(renderer, &sliderBgRect);
 
                 // 绘制滑动条
                 SDL_SetRenderDrawColor(renderer, 50, 150, 255, 255);
-                SDL_Rect sliderRect = {sliderX, sliderY, sliderPos, sliderHeight};
+                SDL_Rect sliderRect = {sliderX, sliderY, sliderPos,
+                                       sliderHeight};
                 SDL_RenderFillRect(renderer, &sliderRect);
 
                 // 绘制滑动条边框
@@ -873,13 +878,16 @@ int main(int argv, char *args[]) {
                     if (mouseY >= sliderY && mouseY <= sliderY + sliderHeight &&
                         mouseX >= sliderX && mouseX <= sliderX + sliderWidth) {
                         // 计算新音量
-                        int newVolume = ((mouseX - sliderX) * maxVolume) / sliderWidth;
+                        int newVolume =
+                            ((mouseX - sliderX) * maxVolume) / sliderWidth;
                         Mix_VolumeMusic(newVolume);
                     }
                 }
 
                 TTF_CloseFont(volumeFont);
             }
+
+            // 在上面声音滑动条下面，添加一行文字，文字为"方块下落速度", AI!
 
             // 更新屏幕
             SDL_RenderPresent(renderer);
