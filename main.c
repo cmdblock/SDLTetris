@@ -910,6 +910,9 @@ int main(int argv, char *args[]) {
                 TTF_CloseFont(speedFont);
             }
 
+            // 在”方块下落速度"文字下面，添加一个滑动条，来调节俄罗斯方块的下落速度,
+            // AI!
+
             // 更新屏幕
             SDL_RenderPresent(renderer);
 
