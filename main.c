@@ -698,7 +698,7 @@ int main(int argv, char *args[]) {
                         int textWidth = textSurface->w;
                         int textHeight = textSurface->h;
                         SDL_Rect textRect = {(WINDOW_WIDTH - textWidth) / 2,
-                                             100, // 标题距离顶部100像素
+                                             20, // 标题距离顶部20像素
                                              textWidth, textHeight};
                         SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
                         SDL_DestroyTexture(textTexture);
