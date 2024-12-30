@@ -941,7 +941,7 @@ int main(int argv, char *args[]) {
                         int buttonWidth = textSurface->w + 40;
                         int buttonHeight = textSurface->h + 20;
                         int buttonX = (WINDOW_WIDTH - buttonWidth) / 2;
-                        int buttonY = 400; // 在开始游戏按钮下方100像素
+                        int buttonY = 367; // 在开始游戏按钮(234)和游戏帮助按钮(500)中间
 
                         // 获取鼠标位置
                         int mouseX, mouseY;
