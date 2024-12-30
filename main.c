@@ -722,7 +722,7 @@ int main(int argv, char *args[]) {
                         int buttonWidth = textSurface->w + 40;
                         int buttonHeight = textSurface->h + 20;
                         int buttonX = (WINDOW_WIDTH - buttonWidth) / 2;
-                        int buttonY = 300; // 按钮距离顶部300像素
+                        int buttonY = 100; // 按钮在标题下方20像素（标题高度48 + 20 = 68，标题位置20 + 68 = 88，取整100）
 
                         // 获取鼠标位置
                         int mouseX, mouseY;
