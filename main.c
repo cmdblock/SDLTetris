@@ -17,9 +17,9 @@ int score = 0; // 当前游戏分数
 
 // 俄罗斯方块结构体
 typedef struct {
-    int x, y;          // 方块在游戏区域中的位置
-    int shape[4][4];   // 方块的4x4形状矩阵
-    int type;          // 方块的类型 (0-6对应7种不同形状)
+    int x, y;        // 方块在游戏区域中的位置
+    int shape[4][4]; // 方块的4x4形状矩阵
+    int type;        // 方块的类型 (0-6对应7种不同形状)
 } Tetromino;
 
 // 消除动画结构体
@@ -36,17 +36,17 @@ ClearAnimation clearAnim = {0}; // 消除动画状态
 // 游戏状态历史记录结构体
 typedef struct {
     uint8_t arena[ARENA_HEIGHT][ARENA_WIDTH]; // 游戏区域状态
-    Tetromino currentPiece; // 当前方块
-    Tetromino nextPiece;    // 下一个方块
-    int score;              // 当前分数
+    Tetromino currentPiece;                   // 当前方块
+    Tetromino nextPiece;                      // 下一个方块
+    int score;                                // 当前分数
 } GameState;
 
-#define HISTORY_SIZE 3 // 保存最近3个游戏状态
+#define HISTORY_SIZE 3           // 保存最近3个游戏状态
 GameState history[HISTORY_SIZE]; // 历史状态数组，用于实现撤销功能
 int historyIndex = 0; // 当前历史状态索引，用于循环记录
 
-Tetromino currentPiece;  // 当前下落的方块
-Tetromino nextPiece; // 存储下一个方块
+Tetromino currentPiece; // 当前下落的方块
+Tetromino nextPiece;    // 存储下一个方块
 uint8_t arena[ARENA_HEIGHT][ARENA_WIDTH];
 
 // 所有俄罗斯方块的形状
@@ -74,7 +74,7 @@ bool checkCollision(Tetromino *piece) {
             if (piece->shape[i][j]) { // 如果当前位置有方块
                 int x = piece->x + j; // 计算在游戏区域中的x坐标
                 int y = piece->y + i; // 计算在游戏区域中的y坐标
-                
+
                 // 检查是否超出边界或与已有方块碰撞
                 if (x < 0 || x >= ARENA_WIDTH || y >= ARENA_HEIGHT ||
                     (y >= 0 && arena[y][x])) {
@@ -87,10 +87,10 @@ bool checkCollision(Tetromino *piece) {
 }
 
 // 游戏状态标志
-bool gameOver = false;    // 游戏是否结束
-bool isPaused = false;    // 游戏是否暂停
-bool inStartMenu = true;  // 是否在开始菜单界面
-bool inHelpMenu = false;  // 是否在帮助说明界面
+bool gameOver = false;   // 游戏是否结束
+bool isPaused = false;   // 游戏是否暂停
+bool inStartMenu = true; // 是否在开始菜单界面
+bool inHelpMenu = false; // 是否在帮助说明界面
 
 bool lockPiece() {
     // 将当前方块锁定到游戏区域
@@ -115,13 +115,13 @@ bool lockPiece() {
 void undoLastMove() {
     // 计算要恢复的历史状态索引
     int restoreIndex = (historyIndex - 1 + HISTORY_SIZE) % HISTORY_SIZE;
-    
+
     // 恢复游戏状态
     memcpy(arena, history[restoreIndex].arena, sizeof(arena));
     currentPiece = history[restoreIndex].currentPiece;
     nextPiece = history[restoreIndex].nextPiece;
     score = history[restoreIndex].score;
-    
+
     // 更新历史索引
     historyIndex = restoreIndex;
 }
@@ -169,10 +169,10 @@ void initGame() {
     FILE *file = fopen("savegame.dat", "rb");
     if (file) {
         // 从文件加载游戏状态
-        fread(arena, sizeof(arena), 1, file);        // 加载游戏区域
+        fread(arena, sizeof(arena), 1, file); // 加载游戏区域
         fread(&currentPiece, sizeof(currentPiece), 1, file); // 加载当前方块
-        fread(&nextPiece, sizeof(nextPiece), 1, file);       // 加载下一个方块
-        fread(&score, sizeof(score), 1, file);               // 加载分数
+        fread(&nextPiece, sizeof(nextPiece), 1, file); // 加载下一个方块
+        fread(&score, sizeof(score), 1, file);         // 加载分数
         fclose(file);
     } else {
         // 如果没有保存的进度，初始化新的游戏
@@ -543,35 +543,35 @@ int main(int argv, char *args[]) {
             if (font) {
                 // 游戏玩法说明文本
                 const char *helpText[] = {
-                    "俄罗斯方块玩法说明：",
-                    "1. 使用 A 键向左移动方块",
-                    "2. 使用 D 键向右移动方块", 
-                    "3. 使用 S 键加速下落",
-                    "4. 使用 W 键旋转方块",
-                    "5. 填满一行即可消除得分",
-                    "6. 按 Esc 键暂停游戏"
-                };
+                    "俄罗斯方块玩法说明：",     "1. 使用 A 键向左移动方块",
+                    "2. 使用 D 键向右移动方块", "3. 使用 S 键加速下落",
+                    "4. 使用 W 键旋转方块",     "5. 填满一行即可消除得分",
+                    "6. 按 Esc 键暂停游戏"};
 
                 // 初始绘制位置
                 int yPos = 100;
-                
+
                 // 逐行绘制说明文本
-                for (int i = 0; i < sizeof(helpText)/sizeof(helpText[0]); i++) {
+                for (int i = 0; i < sizeof(helpText) / sizeof(helpText[0]);
+                     i++) {
                     SDL_Color textColor = {255, 255, 255, 255}; // 白色文字
-                    SDL_Surface *textSurface = TTF_RenderUTF8_Solid(font, helpText[i], textColor);
+                    SDL_Surface *textSurface =
+                        TTF_RenderUTF8_Solid(font, helpText[i], textColor);
                     if (textSurface) {
-                        SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+                        SDL_Texture *textTexture =
+                            SDL_CreateTextureFromSurface(renderer, textSurface);
                         if (textTexture) {
                             // 计算文本位置（居中显示）
                             int textWidth = textSurface->w;
                             int textHeight = textSurface->h;
-                            SDL_Rect textRect = {
-                                (WINDOW_WIDTH - textWidth) / 2, // 水平居中
-                                yPos, // 垂直位置
-                                textWidth, textHeight};
-                            
+                            SDL_Rect textRect = {(WINDOW_WIDTH - textWidth) /
+                                                     2, // 水平居中
+                                                 yPos,  // 垂直位置
+                                                 textWidth, textHeight};
+
                             // 绘制文本
-                            SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+                            SDL_RenderCopy(renderer, textTexture, NULL,
+                                           &textRect);
                             SDL_DestroyTexture(textTexture);
                         }
                         SDL_FreeSurface(textSurface);
@@ -581,9 +581,11 @@ int main(int argv, char *args[]) {
 
                 // 绘制"返回开始界面"按钮
                 SDL_Color textColor = {255, 255, 255, 255};
-                SDL_Surface *textSurface = TTF_RenderUTF8_Solid(font, "返回开始界面", textColor);
+                SDL_Surface *textSurface =
+                    TTF_RenderUTF8_Solid(font, "返回开始界面", textColor);
                 if (textSurface) {
-                    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+                    SDL_Texture *textTexture =
+                        SDL_CreateTextureFromSurface(renderer, textSurface);
                     if (textTexture) {
                         // 计算按钮位置
                         int buttonWidth = textSurface->w + 40;
@@ -597,14 +599,14 @@ int main(int argv, char *args[]) {
 
                         // 检查鼠标是否在按钮上
                         bool isHovered = (mouseX >= buttonX &&
-                                        mouseX <= buttonX + buttonWidth &&
-                                        mouseY >= buttonY &&
-                                        mouseY <= buttonY + buttonHeight);
+                                          mouseX <= buttonX + buttonWidth &&
+                                          mouseY >= buttonY &&
+                                          mouseY <= buttonY + buttonHeight);
 
                         // 绘制按钮阴影
                         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 64);
                         SDL_Rect shadowRect = {buttonX + 4, buttonY + 4,
-                                            buttonWidth, buttonHeight};
+                                               buttonWidth, buttonHeight};
                         SDL_RenderFillRect(renderer, &shadowRect);
 
                         // 根据鼠标悬停状态设置按钮颜色
@@ -614,7 +616,7 @@ int main(int argv, char *args[]) {
                             SDL_SetRenderDrawColor(renderer, 30, 80, 150, 255);
                         }
                         SDL_Rect buttonRect = {buttonX, buttonY, buttonWidth,
-                                            buttonHeight};
+                                               buttonHeight};
 
                         // 绘制圆角矩形
                         for (int i = 0; i < 10; i++) {
@@ -627,9 +629,11 @@ int main(int argv, char *args[]) {
 
                         // 绘制按钮边框
                         if (isHovered) {
-                            SDL_SetRenderDrawColor(renderer, 100, 200, 255, 255);
+                            SDL_SetRenderDrawColor(renderer, 100, 200, 255,
+                                                   255);
                         } else {
-                            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                            SDL_SetRenderDrawColor(renderer, 255, 255, 255,
+                                                   255);
                         }
                         for (int i = 0; i < 2; i++) {
                             SDL_Rect borderRect = {
@@ -640,7 +644,7 @@ int main(int argv, char *args[]) {
 
                         // 绘制按钮文字
                         SDL_Rect textRect = {buttonX + 20, buttonY + 10,
-                                            textSurface->w, textSurface->h};
+                                             textSurface->w, textSurface->h};
                         SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
 
                         // 检测鼠标点击
@@ -685,16 +689,17 @@ int main(int argv, char *args[]) {
             TTF_Font *titleFont = TTF_OpenFont("simhei.ttf", 64);
             if (titleFont) {
                 SDL_Color textColor = {255, 255, 255, 255};
-                SDL_Surface *textSurface = TTF_RenderUTF8_Solid(titleFont, "俄罗斯方块", textColor);
+                SDL_Surface *textSurface =
+                    TTF_RenderUTF8_Solid(titleFont, "俄罗斯方块", textColor);
                 if (textSurface) {
-                    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+                    SDL_Texture *textTexture =
+                        SDL_CreateTextureFromSurface(renderer, textSurface);
                     if (textTexture) {
                         int textWidth = textSurface->w;
                         int textHeight = textSurface->h;
-                        SDL_Rect textRect = {
-                            (WINDOW_WIDTH - textWidth) / 2,
-                            100, // 标题距离顶部100像素
-                            textWidth, textHeight};
+                        SDL_Rect textRect = {(WINDOW_WIDTH - textWidth) / 2,
+                                             100, // 标题距离顶部100像素
+                                             textWidth, textHeight};
                         SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
                         SDL_DestroyTexture(textTexture);
                     }
@@ -707,9 +712,11 @@ int main(int argv, char *args[]) {
             TTF_Font *buttonFont = TTF_OpenFont("simhei.ttf", 36);
             if (buttonFont) {
                 SDL_Color textColor = {255, 255, 255, 255};
-                SDL_Surface *textSurface = TTF_RenderUTF8_Solid(buttonFont, "开始游戏", textColor);
+                SDL_Surface *textSurface =
+                    TTF_RenderUTF8_Solid(buttonFont, "开始游戏", textColor);
                 if (textSurface) {
-                    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+                    SDL_Texture *textTexture =
+                        SDL_CreateTextureFromSurface(renderer, textSurface);
                     if (textTexture) {
                         // 计算按钮位置
                         int buttonWidth = textSurface->w + 40;
@@ -723,14 +730,14 @@ int main(int argv, char *args[]) {
 
                         // 检查鼠标是否在按钮上
                         bool isHovered = (mouseX >= buttonX &&
-                                        mouseX <= buttonX + buttonWidth &&
-                                        mouseY >= buttonY &&
-                                        mouseY <= buttonY + buttonHeight);
+                                          mouseX <= buttonX + buttonWidth &&
+                                          mouseY >= buttonY &&
+                                          mouseY <= buttonY + buttonHeight);
 
                         // 绘制按钮阴影
                         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 64);
                         SDL_Rect shadowRect = {buttonX + 4, buttonY + 4,
-                                            buttonWidth, buttonHeight};
+                                               buttonWidth, buttonHeight};
                         SDL_RenderFillRect(renderer, &shadowRect);
 
                         // 根据鼠标悬停状态设置按钮颜色
@@ -740,7 +747,7 @@ int main(int argv, char *args[]) {
                             SDL_SetRenderDrawColor(renderer, 30, 80, 150, 255);
                         }
                         SDL_Rect buttonRect = {buttonX, buttonY, buttonWidth,
-                                            buttonHeight};
+                                               buttonHeight};
 
                         // 绘制圆角矩形
                         for (int i = 0; i < 10; i++) {
@@ -753,9 +760,11 @@ int main(int argv, char *args[]) {
 
                         // 绘制按钮边框
                         if (isHovered) {
-                            SDL_SetRenderDrawColor(renderer, 100, 200, 255, 255);
+                            SDL_SetRenderDrawColor(renderer, 100, 200, 255,
+                                                   255);
                         } else {
-                            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                            SDL_SetRenderDrawColor(renderer, 255, 255, 255,
+                                                   255);
                         }
                         for (int i = 0; i < 2; i++) {
                             SDL_Rect borderRect = {
@@ -766,7 +775,7 @@ int main(int argv, char *args[]) {
 
                         // 绘制按钮文字
                         SDL_Rect textRect = {buttonX + 20, buttonY + 10,
-                                            textSurface->w, textSurface->h};
+                                             textSurface->w, textSurface->h};
                         SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
 
                         // 检测鼠标点击
@@ -791,9 +800,11 @@ int main(int argv, char *args[]) {
             buttonFont = TTF_OpenFont("simhei.ttf", 36);
             if (buttonFont) {
                 SDL_Color textColor = {255, 255, 255, 255};
-                SDL_Surface *textSurface = TTF_RenderUTF8_Solid(buttonFont, "游戏设置", textColor);
+                SDL_Surface *textSurface =
+                    TTF_RenderUTF8_Solid(buttonFont, "游戏设置", textColor);
                 if (textSurface) {
-                    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+                    SDL_Texture *textTexture =
+                        SDL_CreateTextureFromSurface(renderer, textSurface);
                     if (textTexture) {
                         // 计算按钮位置，放在"开始游戏"按钮下方
                         int buttonWidth = textSurface->w + 40;
@@ -807,24 +818,25 @@ int main(int argv, char *args[]) {
 
                         // 检查鼠标是否在按钮上
                         bool isHovered = (mouseX >= buttonX &&
-                                        mouseX <= buttonX + buttonWidth &&
-                                        mouseY >= buttonY &&
-                                        mouseY <= buttonY + buttonHeight);
+                                          mouseX <= buttonX + buttonWidth &&
+                                          mouseY >= buttonY &&
+                                          mouseY <= buttonY + buttonHeight);
 
                         // 绘制按钮阴影
                         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 64);
                         SDL_Rect shadowRect = {buttonX + 4, buttonY + 4,
-                                            buttonWidth, buttonHeight};
+                                               buttonWidth, buttonHeight};
                         SDL_RenderFillRect(renderer, &shadowRect);
 
                         // 根据鼠标悬停状态设置按钮颜色
                         if (isHovered) {
-                            SDL_SetRenderDrawColor(renderer, 150, 100, 255, 255);
+                            SDL_SetRenderDrawColor(renderer, 150, 100, 255,
+                                                   255);
                         } else {
                             SDL_SetRenderDrawColor(renderer, 100, 50, 200, 255);
                         }
                         SDL_Rect buttonRect = {buttonX, buttonY, buttonWidth,
-                                            buttonHeight};
+                                               buttonHeight};
 
                         // 绘制圆角矩形
                         for (int i = 0; i < 10; i++) {
@@ -837,9 +849,11 @@ int main(int argv, char *args[]) {
 
                         // 绘制按钮边框
                         if (isHovered) {
-                            SDL_SetRenderDrawColor(renderer, 200, 150, 255, 255);
+                            SDL_SetRenderDrawColor(renderer, 200, 150, 255,
+                                                   255);
                         } else {
-                            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                            SDL_SetRenderDrawColor(renderer, 255, 255, 255,
+                                                   255);
                         }
                         for (int i = 0; i < 2; i++) {
                             SDL_Rect borderRect = {
@@ -850,7 +864,7 @@ int main(int argv, char *args[]) {
 
                         // 绘制按钮文字
                         SDL_Rect textRect = {buttonX + 20, buttonY + 10,
-                                            textSurface->w, textSurface->h};
+                                             textSurface->w, textSurface->h};
                         SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
 
                         // 检测鼠标点击
@@ -860,7 +874,190 @@ int main(int argv, char *args[]) {
                                 mouseX <= buttonX + buttonWidth &&
                                 mouseY >= buttonY &&
                                 mouseY <= buttonY + buttonHeight) {
-                                // TODO: 添加游戏设置功能
+                                // 进入游戏设置界面
+                                bool inSettingsMenu = true;
+                                while (inSettingsMenu) {
+                                    // 清屏
+                                    SDL_SetRenderDrawColor(renderer, 0, 0, 0,
+                                                           255);
+                                    SDL_RenderClear(renderer);
+
+                                    // 绘制"游戏设置"标题
+                                    TTF_Font *titleFont =
+                                        TTF_OpenFont("simhei.ttf", 48);
+                                    if (titleFont) {
+                                        SDL_Color textColor = {255, 255, 255,
+                                                               255};
+                                        SDL_Surface *textSurface =
+                                            TTF_RenderUTF8_Solid(titleFont,
+                                                                 "游戏设置",
+                                                                 textColor);
+                                        if (textSurface) {
+                                            SDL_Texture *textTexture =
+                                                SDL_CreateTextureFromSurface(
+                                                    renderer, textSurface);
+                                            if (textTexture) {
+                                                int textWidth = textSurface->w;
+                                                int textHeight = textSurface->h;
+                                                SDL_Rect textRect = {
+                                                    (WINDOW_WIDTH - textWidth) /
+                                                        2,
+                                                    100, // 标题距离顶部100像素
+                                                    textWidth, textHeight};
+                                                SDL_RenderCopy(renderer,
+                                                               textTexture,
+                                                               NULL, &textRect);
+                                                SDL_DestroyTexture(textTexture);
+                                            }
+                                            SDL_FreeSurface(textSurface);
+                                        }
+                                        TTF_CloseFont(titleFont);
+                                    }
+
+                                    // 绘制"返回主菜单"按钮
+                                    TTF_Font *buttonFont =
+                                        TTF_OpenFont("simhei.ttf", 36);
+                                    if (buttonFont) {
+                                        SDL_Color textColor = {255, 255, 255,
+                                                               255};
+                                        SDL_Surface *textSurface =
+                                            TTF_RenderUTF8_Solid(buttonFont,
+                                                                 "返回主菜单",
+                                                                 textColor);
+                                        if (textSurface) {
+                                            SDL_Texture *textTexture =
+                                                SDL_CreateTextureFromSurface(
+                                                    renderer, textSurface);
+                                            if (textTexture) {
+                                                // 计算按钮位置
+                                                int buttonWidth =
+                                                    textSurface->w + 40;
+                                                int buttonHeight =
+                                                    textSurface->h + 20;
+                                                int buttonX = (WINDOW_WIDTH -
+                                                               buttonWidth) /
+                                                              2;
+                                                int buttonY =
+                                                    300; // 按钮距离顶部300像素
+
+                                                // 获取鼠标位置
+                                                int mouseX, mouseY;
+                                                SDL_GetMouseState(&mouseX,
+                                                                  &mouseY);
+
+                                                // 检查鼠标是否在按钮上
+                                                bool isHovered =
+                                                    (mouseX >= buttonX &&
+                                                     mouseX <=
+                                                         buttonX +
+                                                             buttonWidth &&
+                                                     mouseY >= buttonY &&
+                                                     mouseY <=
+                                                         buttonY +
+                                                             buttonHeight);
+
+                                                // 绘制按钮阴影
+                                                SDL_SetRenderDrawColor(
+                                                    renderer, 0, 0, 0, 64);
+                                                SDL_Rect shadowRect = {
+                                                    buttonX + 4, buttonY + 4,
+                                                    buttonWidth, buttonHeight};
+                                                SDL_RenderFillRect(renderer,
+                                                                   &shadowRect);
+
+                                                // 根据鼠标悬停状态设置按钮颜色
+                                                if (isHovered) {
+                                                    SDL_SetRenderDrawColor(
+                                                        renderer, 50, 150, 255,
+                                                        255);
+                                                } else {
+                                                    SDL_SetRenderDrawColor(
+                                                        renderer, 30, 80, 150,
+                                                        255);
+                                                }
+                                                SDL_Rect buttonRect = {
+                                                    buttonX, buttonY,
+                                                    buttonWidth, buttonHeight};
+
+                                                // 绘制圆角矩形
+                                                for (int i = 0; i < 10; i++) {
+                                                    SDL_Rect roundRect = {
+                                                        buttonRect.x + i,
+                                                        buttonRect.y + i,
+                                                        buttonRect.w - i * 2,
+                                                        buttonRect.h - i * 2};
+                                                    SDL_RenderDrawRect(
+                                                        renderer, &roundRect);
+                                                }
+                                                SDL_RenderFillRect(renderer,
+                                                                   &buttonRect);
+
+                                                // 绘制按钮边框
+                                                if (isHovered) {
+                                                    SDL_SetRenderDrawColor(
+                                                        renderer, 100, 200, 255,
+                                                        255);
+                                                } else {
+                                                    SDL_SetRenderDrawColor(
+                                                        renderer, 255, 255, 255,
+                                                        255);
+                                                }
+                                                for (int i = 0; i < 2; i++) {
+                                                    SDL_Rect borderRect = {
+                                                        buttonRect.x + i,
+                                                        buttonRect.y + i,
+                                                        buttonRect.w - i * 2,
+                                                        buttonRect.h - i * 2};
+                                                    SDL_RenderDrawRect(
+                                                        renderer, &borderRect);
+                                                }
+
+                                                // 绘制按钮文字
+                                                SDL_Rect textRect = {
+                                                    buttonX + 20, buttonY + 10,
+                                                    textSurface->w,
+                                                    textSurface->h};
+                                                SDL_RenderCopy(renderer,
+                                                               textTexture,
+                                                               NULL, &textRect);
+
+                                                // 检测鼠标点击
+                                                if (SDL_GetMouseState(&mouseX,
+                                                                      &mouseY) &
+                                                    SDL_BUTTON(
+                                                        SDL_BUTTON_LEFT)) {
+                                                    if (mouseX >= buttonX &&
+                                                        mouseX <=
+                                                            buttonX +
+                                                                buttonWidth &&
+                                                        mouseY >= buttonY &&
+                                                        mouseY <=
+                                                            buttonY +
+                                                                buttonHeight) {
+                                                        inSettingsMenu = false;
+                                                        inStartMenu = true;
+                                                    }
+                                                }
+
+                                                SDL_DestroyTexture(textTexture);
+                                            }
+                                            SDL_FreeSurface(textSurface);
+                                        }
+                                        TTF_CloseFont(buttonFont);
+                                    }
+
+                                    // 更新屏幕
+                                    SDL_RenderPresent(renderer);
+
+                                    // 处理事件
+                                    SDL_Event event;
+                                    while (SDL_PollEvent(&event) != 0) {
+                                        if (event.type == SDL_QUIT) {
+                                            inSettingsMenu = false;
+                                            quit = true;
+                                        }
+                                    }
+                                }
                             }
                         }
 
@@ -875,9 +1072,11 @@ int main(int argv, char *args[]) {
             buttonFont = TTF_OpenFont("simhei.ttf", 36);
             if (buttonFont) {
                 SDL_Color textColor = {255, 255, 255, 255};
-                SDL_Surface *textSurface = TTF_RenderUTF8_Solid(buttonFont, "游戏帮助", textColor);
+                SDL_Surface *textSurface =
+                    TTF_RenderUTF8_Solid(buttonFont, "游戏帮助", textColor);
                 if (textSurface) {
-                    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+                    SDL_Texture *textTexture =
+                        SDL_CreateTextureFromSurface(renderer, textSurface);
                     if (textTexture) {
                         // 计算按钮位置，放在"游戏设置"按钮下方
                         int buttonWidth = textSurface->w + 40;
@@ -891,24 +1090,25 @@ int main(int argv, char *args[]) {
 
                         // 检查鼠标是否在按钮上
                         bool isHovered = (mouseX >= buttonX &&
-                                        mouseX <= buttonX + buttonWidth &&
-                                        mouseY >= buttonY &&
-                                        mouseY <= buttonY + buttonHeight);
+                                          mouseX <= buttonX + buttonWidth &&
+                                          mouseY >= buttonY &&
+                                          mouseY <= buttonY + buttonHeight);
 
                         // 绘制按钮阴影
                         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 64);
                         SDL_Rect shadowRect = {buttonX + 4, buttonY + 4,
-                                            buttonWidth, buttonHeight};
+                                               buttonWidth, buttonHeight};
                         SDL_RenderFillRect(renderer, &shadowRect);
 
                         // 根据鼠标悬停状态设置按钮颜色
                         if (isHovered) {
-                            SDL_SetRenderDrawColor(renderer, 255, 100, 100, 255);
+                            SDL_SetRenderDrawColor(renderer, 255, 100, 100,
+                                                   255);
                         } else {
                             SDL_SetRenderDrawColor(renderer, 200, 50, 50, 255);
                         }
                         SDL_Rect buttonRect = {buttonX, buttonY, buttonWidth,
-                                            buttonHeight};
+                                               buttonHeight};
 
                         // 绘制圆角矩形
                         for (int i = 0; i < 10; i++) {
@@ -921,9 +1121,11 @@ int main(int argv, char *args[]) {
 
                         // 绘制按钮边框
                         if (isHovered) {
-                            SDL_SetRenderDrawColor(renderer, 255, 150, 150, 255);
+                            SDL_SetRenderDrawColor(renderer, 255, 150, 150,
+                                                   255);
                         } else {
-                            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                            SDL_SetRenderDrawColor(renderer, 255, 255, 255,
+                                                   255);
                         }
                         for (int i = 0; i < 2; i++) {
                             SDL_Rect borderRect = {
@@ -934,7 +1136,7 @@ int main(int argv, char *args[]) {
 
                         // 绘制按钮文字
                         SDL_Rect textRect = {buttonX + 20, buttonY + 10,
-                                            textSurface->w, textSurface->h};
+                                             textSurface->w, textSurface->h};
                         SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
 
                         // 检测鼠标点击
