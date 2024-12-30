@@ -910,8 +910,42 @@ int main(int argv, char *args[]) {
                 TTF_CloseFont(speedFont);
             }
 
-            // 在”方块下落速度"文字下面，添加一个滑动条，来调节俄罗斯方块的下落速度,
-            // AI!
+            // 绘制方块下落速度滑动条
+            int speedSliderWidth = 300;
+            int speedSliderHeight = 20;
+            int speedSliderX = (WINDOW_WIDTH - speedSliderWidth) / 2;
+            int speedSliderY = 350; // 在文字下方
+
+            // 计算当前速度对应的滑块位置 (500ms - 100ms range)
+            int minFallTime = 100;
+            int maxFallTime = 500;
+            int speedSliderPos = ((maxFallTime - (lastFall - minFallTime)) * speedSliderWidth) / (maxFallTime - minFallTime);
+
+            // 绘制滑动条背景
+            SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+            SDL_Rect speedSliderBgRect = {speedSliderX, speedSliderY, speedSliderWidth, speedSliderHeight};
+            SDL_RenderFillRect(renderer, &speedSliderBgRect);
+
+            // 绘制滑动条
+            SDL_SetRenderDrawColor(renderer, 50, 150, 255, 255);
+            SDL_Rect speedSliderRect = {speedSliderX, speedSliderY, speedSliderPos, speedSliderHeight};
+            SDL_RenderFillRect(renderer, &speedSliderRect);
+
+            // 绘制滑动条边框
+            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+            SDL_RenderDrawRect(renderer, &speedSliderBgRect);
+
+            // 处理滑动条交互
+            int mouseX, mouseY;
+            Uint32 mouseState = SDL_GetMouseState(&mouseX, &mouseY);
+            if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+                if (mouseY >= speedSliderY && mouseY <= speedSliderY + speedSliderHeight &&
+                    mouseX >= speedSliderX && mouseX <= speedSliderX + speedSliderWidth) {
+                    // 计算新的下落间隔时间
+                    int newFallTime = maxFallTime - ((mouseX - speedSliderX) * (maxFallTime - minFallTime)) / speedSliderWidth;
+                    lastFall = newFallTime;
+                }
+            }
 
             // 更新屏幕
             SDL_RenderPresent(renderer);
