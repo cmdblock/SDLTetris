@@ -1310,12 +1310,22 @@ int main(int argv, char *args[]) {
                         SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
 
                         // 检测鼠标点击
-                        if (SDL_GetMouseState(&mouseX, &mouseY) &
-                            SDL_BUTTON(SDL_BUTTON_LEFT)) {
-                            if (mouseX >= buttonX &&
-                                mouseX <= buttonX + buttonWidth &&
-                                mouseY >= buttonY &&
-                                mouseY <= buttonY + buttonHeight) {
+                        static Uint32 mouseDownTime = 0;
+                        static bool isMouseDown = false;
+                        
+                        if (SDL_GetMouseState(&mouseX, &mouseY) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+                            if (!isMouseDown && 
+                                mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
+                                mouseY >= buttonY && mouseY <= buttonY + buttonHeight) {
+                                // 记录鼠标按下时间和状态
+                                mouseDownTime = SDL_GetTicks();
+                                isMouseDown = true;
+                            }
+                        } else if (isMouseDown) {
+                            // 鼠标抬起，检查是否在按钮区域内且时间超过100ms
+                            if (mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
+                                mouseY >= buttonY && mouseY <= buttonY + buttonHeight &&
+                                SDL_GetTicks() - mouseDownTime >= 100) {
                                 // 保存游戏进度
                                 FILE *file = fopen("savegame.dat", "wb");
                                 if (file) {
@@ -1332,6 +1342,7 @@ int main(int argv, char *args[]) {
                                     fclose(file);
                                 }
                             }
+                            isMouseDown = false;
                         }
 
                         SDL_DestroyTexture(textTexture);
@@ -1429,15 +1440,26 @@ int main(int argv, char *args[]) {
                         SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
 
                         // 检测鼠标点击
-                        if (SDL_GetMouseState(&mouseX, &mouseY) &
-                            SDL_BUTTON(SDL_BUTTON_LEFT)) {
-                            if (mouseX >= buttonX &&
-                                mouseX <= buttonX + buttonWidth &&
-                                mouseY >= buttonY &&
-                                mouseY <= buttonY + buttonHeight) {
+                        static Uint32 mouseDownTime = 0;
+                        static bool isMouseDown = false;
+                        
+                        if (SDL_GetMouseState(&mouseX, &mouseY) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+                            if (!isMouseDown && 
+                                mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
+                                mouseY >= buttonY && mouseY <= buttonY + buttonHeight) {
+                                // 记录鼠标按下时间和状态
+                                mouseDownTime = SDL_GetTicks();
+                                isMouseDown = true;
+                            }
+                        } else if (isMouseDown) {
+                            // 鼠标抬起，检查是否在按钮区域内且时间超过100ms
+                            if (mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
+                                mouseY >= buttonY && mouseY <= buttonY + buttonHeight &&
+                                SDL_GetTicks() - mouseDownTime >= 100) {
                                 // 执行撤销操作
                                 undoLastMove();
                             }
+                            isMouseDown = false;
                         }
 
                         SDL_DestroyTexture(textTexture);
