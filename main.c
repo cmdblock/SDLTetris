@@ -916,10 +916,10 @@ int main(int argv, char *args[]) {
             int speedSliderX = (WINDOW_WIDTH - speedSliderWidth) / 2;
             int speedSliderY = 350; // 在文字下方
 
-            // 计算当前速度对应的滑块位置 (500ms - 100ms range)
-            int minFallTime = 100;
-            int maxFallTime = 500;
-            int speedSliderPos = ((maxFallTime - (lastFall - minFallTime)) * speedSliderWidth) / (maxFallTime - minFallTime);
+            // 计算当前速度对应的滑块位置 (左边慢500ms，右边快100ms)
+            int minFallTime = 100;  // 最快速度（右边）
+            int maxFallTime = 500;  // 最慢速度（左边）
+            int speedSliderPos = ((lastFall - minFallTime) * speedSliderWidth) / (maxFallTime - minFallTime);
 
             // 绘制滑动条背景
             SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
@@ -941,8 +941,8 @@ int main(int argv, char *args[]) {
             if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) {
                 if (mouseY >= speedSliderY && mouseY <= speedSliderY + speedSliderHeight &&
                     mouseX >= speedSliderX && mouseX <= speedSliderX + speedSliderWidth) {
-                    // 计算新的下落间隔时间
-                    int newFallTime = maxFallTime - ((mouseX - speedSliderX) * (maxFallTime - minFallTime)) / speedSliderWidth;
+                    // 计算新的下落间隔时间（左边慢，右边快）
+                    int newFallTime = minFallTime + ((mouseX - speedSliderX) * (maxFallTime - minFallTime)) / speedSliderWidth;
                     lastFall = newFallTime;
                 }
             }
