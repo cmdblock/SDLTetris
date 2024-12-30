@@ -715,6 +715,24 @@ int main(int argv, char *args[]) {
                 SDL_Color textColor = {255, 255, 255, 255};
                 SDL_Surface *textSurface =
                     TTF_RenderUTF8_Solid(buttonFont, "返回开始界面", textColor);
+                
+                // 在按钮下方添加"调整音量"提示
+                TTF_Font *hintFont = TTF_OpenFont("simhei.ttf", 24);
+                if (hintFont) {
+                    SDL_Surface *hintSurface = TTF_RenderUTF8_Solid(hintFont, "调整音量: 使用上下箭头键", textColor);
+                    if (hintSurface) {
+                        SDL_Texture *hintTexture = SDL_CreateTextureFromSurface(renderer, hintSurface);
+                        if (hintTexture) {
+                            int hintX = (WINDOW_WIDTH - hintSurface->w) / 2;
+                            int hintY = 200; // 在返回按钮下方
+                            SDL_Rect hintRect = {hintX, hintY, hintSurface->w, hintSurface->h};
+                            SDL_RenderCopy(renderer, hintTexture, NULL, &hintRect);
+                            SDL_DestroyTexture(hintTexture);
+                        }
+                        SDL_FreeSurface(hintSurface);
+                    }
+                    TTF_CloseFont(hintFont);
+                }
                 if (textSurface) {
                     SDL_Texture *textTexture =
                         SDL_CreateTextureFromSurface(renderer, textSurface);
