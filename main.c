@@ -887,7 +887,28 @@ int main(int argv, char *args[]) {
                 TTF_CloseFont(volumeFont);
             }
 
-            // 在上面声音滑动条下面，添加一行文字，文字为"方块下落速度", AI!
+            // 绘制"方块下落速度"提示
+            TTF_Font *speedFont = TTF_OpenFont("simhei.ttf", 24);
+            if (speedFont) {
+                SDL_Color textColor = {255, 255, 255, 255};
+                SDL_Surface *textSurface =
+                    TTF_RenderUTF8_Solid(speedFont, "方块下落速度", textColor);
+                if (textSurface) {
+                    SDL_Texture *textTexture =
+                        SDL_CreateTextureFromSurface(renderer, textSurface);
+                    if (textTexture) {
+                        int textWidth = textSurface->w;
+                        int textHeight = textSurface->h;
+                        SDL_Rect textRect = {(WINDOW_WIDTH - textWidth) / 2,
+                                             300, // 在音量滑动条下方
+                                             textWidth, textHeight};
+                        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+                        SDL_DestroyTexture(textTexture);
+                    }
+                    SDL_FreeSurface(textSurface);
+                }
+                TTF_CloseFont(speedFont);
+            }
 
             // 更新屏幕
             SDL_RenderPresent(renderer);
