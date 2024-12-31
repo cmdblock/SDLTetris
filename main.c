@@ -1153,10 +1153,9 @@ int main(int argv, char *args[]) {
             // 计算当前速度对应的滑块位置 (左边慢500ms，右边快100ms)
             int minFallTime = 100; // 最快速度（右边）
             int maxFallTime = 500; // 最慢速度（左边）
-            // 初始位置在中间，左边慢右边快
-            int speedSliderPos = speedSliderWidth -
-                                 ((lastFall - minFallTime) * speedSliderWidth) /
-                                     (maxFallTime - minFallTime);
+            // 初始位置在中间
+            int speedSliderPos = (speedSliderWidth * (maxFallTime - lastFallInterval)) / 
+                                (maxFallTime - minFallTime);
 
             // 绘制滑动条背景
             SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
