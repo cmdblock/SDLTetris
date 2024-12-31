@@ -789,7 +789,17 @@ int main(int argv, char *args[]) {
                                 mouseY <= buttonY + buttonHeight) {
                                 // 开始新游戏
                                 inGameSelectMenu = false;
-                                initGame();
+                                // 清空游戏区域
+                                memset(arena, 0, sizeof(arena));
+                                score = 0;
+                                // 初始化随机数种子
+                                srand(SDL_GetTicks());
+                                // 随机生成第一个下一个方块
+                                nextPiece.type = rand() % 7;
+                                memcpy(nextPiece.shape, tetrominoes[nextPiece.type],
+                                       sizeof(nextPiece.shape));
+                                // 生成第一个当前方块
+                                newPiece();
                             }
                         }
 
