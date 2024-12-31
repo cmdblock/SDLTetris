@@ -14,7 +14,8 @@
 #define ARENA_HEIGHT 20 // 游戏区域的高度（方块数量）
 
 int score = 0;         // 当前游戏分数
-Uint32 lastFall = 300; // 方块下落速度, 初始化为中间值 (100 + 500)/2
+Uint32 lastFall = 0; // 记录上次下落时间
+Uint32 lastFallInterval = 300; // 方块下落间隔时间, 初始化为中间值 (100 + 500)/2
 
 // 俄罗斯方块结构体
 typedef struct {
@@ -1187,7 +1188,8 @@ int main(int argv, char *args[]) {
                         maxFallTime - ((mouseX - speedSliderX) *
                                        (maxFallTime - minFallTime)) /
                                           speedSliderWidth;
-                    lastFall = newFallTime;
+                    // 更新全局下落间隔时间
+                    lastFallInterval = newFallTime;
                 }
             }
 
@@ -1566,7 +1568,7 @@ int main(int argv, char *args[]) {
         }
 
         // 自动下落（仅在未暂停时）
-        if (!isPaused && SDL_GetTicks() - lastFall > 500) {
+        if (!isPaused && SDL_GetTicks() - lastFall > lastFallInterval) {
             Tetromino temp = currentPiece;
             temp.y++;
             if (!checkCollision(&temp)) {
