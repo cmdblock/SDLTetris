@@ -95,6 +95,7 @@ bool inStartMenu = true;       // 是否在开始菜单界面
 bool inHelpMenu = false;       // 是否在帮助说明界面
 bool inSettingsMenu = false;   // 在否在游戏设置界面
 bool inGameSelectMenu = false; // 是否在新游戏/加载游戏选择界面
+bool blindMode = false;        // 是否处于盲打模式
 
 bool lockPiece() {
     // 将当前方块锁定到游戏区域
@@ -1610,6 +1611,9 @@ int main(int argv, char *args[]) {
                 case SDLK_ESCAPE: // Esc键暂停/继续
                     isPaused = !isPaused;
                     break;
+                case SDLK_TAB:    // Tab键切换盲打模式
+                    blindMode = !blindMode;
+                    break;
                 }
             }
         }
@@ -1632,12 +1636,16 @@ int main(int argv, char *args[]) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        // 绘制游戏区域、当前方块、分数和下一个方块预览
+        // 绘制游戏区域、分数
         drawArena(renderer);
-        drawPreview(renderer, &currentPiece); // 先绘制预览
-        drawPiece(renderer, &currentPiece, false); // 再绘制当前方块
         drawScore(renderer);
-        drawNextPiece(renderer);
+        
+        // 如果不是盲打模式，绘制当前方块和预览
+        if (!blindMode) {
+            drawPreview(renderer, &currentPiece); // 先绘制预览
+            drawPiece(renderer, &currentPiece, false); // 再绘制当前方块
+            drawNextPiece(renderer);
+        }
 
         // 如果游戏暂停，绘制暂停界面
         if (isPaused && !gameOver) {
