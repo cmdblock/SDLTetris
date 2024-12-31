@@ -209,7 +209,7 @@ void drawPiece(SDL_Renderer *renderer, Tetromino *piece, bool isPreview) {
 
     // 如果是预览方块，设置半透明颜色
     if (isPreview) {
-        color.a = 128; // 设置50%透明度
+        color.a = 192; // 设置75%透明度
     }
 
     for (int i = 0; i < 4; i++) {
