@@ -241,9 +241,24 @@ void drawPreview(SDL_Renderer *renderer, Tetromino *piece) {
         preview.y++;
     }
     preview.y--; // 回退到最后有效位置
-    
-    // 绘制预览方块
-    drawPiece(renderer, &preview, true);
+
+    // 使用当前方块的填充颜色绘制轮廓
+    SDL_Color color = pieceColors[piece->type];
+    int blockSize = 24; // 每个小方块的实际大小
+    int gap = 6;        // 方块之间的间隔
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (preview.shape[i][j]) {
+                SDL_Rect rect = {(preview.x + j) * (blockSize + gap) + gap,
+                                 (preview.y + i) * (blockSize + gap) + gap,
+                                 blockSize, blockSize};
+                // 只绘制边框，使用当前方块的填充颜色
+                SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
+                SDL_RenderDrawRect(renderer, &rect);
+            }
+        }
+    }
 }
 
 Mix_Chunk *clearSound = NULL; // 消除音效
