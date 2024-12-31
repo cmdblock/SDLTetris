@@ -2071,8 +2071,8 @@ int main(int argv, char *args[]) {
                                 mouseX <= buttonX + buttonWidth &&
                                 mouseY >= buttonY &&
                                 mouseY <= buttonY + buttonHeight) {
-                                // 重置游戏状态
-                                initGame();
+                                // 返回开始界面
+                                inStartMenu = true;
                                 gameOver = false;
                             }
                         }
