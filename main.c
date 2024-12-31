@@ -1283,6 +1283,7 @@ int main(int argv, char *args[]) {
 
             continue; // 跳过游戏主逻辑
         }
+
         // 计算时间差
         Uint32 currentTime = SDL_GetTicks();
         float deltaTime = (currentTime - lastTime) / 1000.0f;
