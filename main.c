@@ -14,6 +14,7 @@
 #define ARENA_HEIGHT 20 // 游戏区域的高度（方块数量）
 
 int score = 0; // 当前游戏分数
+Uint32 lastFall;
 
 // 俄罗斯方块结构体
 typedef struct {
@@ -530,7 +531,6 @@ int main(int argv, char *args[]) {
     // 游戏主循环
     bool quit = false;
     SDL_Event e;
-    Uint32 lastFall = SDL_GetTicks();
     Uint32 lastTime = SDL_GetTicks();
     while (!quit) {
         // 帮助界面
@@ -917,18 +917,21 @@ int main(int argv, char *args[]) {
             int speedSliderY = 350; // 在文字下方
 
             // 计算当前速度对应的滑块位置 (左边慢500ms，右边快100ms)
-            int minFallTime = 100;  // 最快速度（右边）
-            int maxFallTime = 500;  // 最慢速度（左边）
-            int speedSliderPos = ((lastFall - minFallTime) * speedSliderWidth) / (maxFallTime - minFallTime);
+            int minFallTime = 100; // 最快速度（右边）
+            int maxFallTime = 500; // 最慢速度（左边）
+            int speedSliderPos = ((lastFall - minFallTime) * speedSliderWidth) /
+                                 (maxFallTime - minFallTime);
 
             // 绘制滑动条背景
             SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
-            SDL_Rect speedSliderBgRect = {speedSliderX, speedSliderY, speedSliderWidth, speedSliderHeight};
+            SDL_Rect speedSliderBgRect = {speedSliderX, speedSliderY,
+                                          speedSliderWidth, speedSliderHeight};
             SDL_RenderFillRect(renderer, &speedSliderBgRect);
 
             // 绘制滑动条
             SDL_SetRenderDrawColor(renderer, 50, 150, 255, 255);
-            SDL_Rect speedSliderRect = {speedSliderX, speedSliderY, speedSliderPos, speedSliderHeight};
+            SDL_Rect speedSliderRect = {speedSliderX, speedSliderY,
+                                        speedSliderPos, speedSliderHeight};
             SDL_RenderFillRect(renderer, &speedSliderRect);
 
             // 绘制滑动条边框
@@ -939,10 +942,15 @@ int main(int argv, char *args[]) {
             int mouseX, mouseY;
             Uint32 mouseState = SDL_GetMouseState(&mouseX, &mouseY);
             if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-                if (mouseY >= speedSliderY && mouseY <= speedSliderY + speedSliderHeight &&
-                    mouseX >= speedSliderX && mouseX <= speedSliderX + speedSliderWidth) {
+                if (mouseY >= speedSliderY &&
+                    mouseY <= speedSliderY + speedSliderHeight &&
+                    mouseX >= speedSliderX &&
+                    mouseX <= speedSliderX + speedSliderWidth) {
                     // 计算新的下落间隔时间（左边慢，右边快）
-                    int newFallTime = minFallTime + ((mouseX - speedSliderX) * (maxFallTime - minFallTime)) / speedSliderWidth;
+                    int newFallTime =
+                        minFallTime + ((mouseX - speedSliderX) *
+                                       (maxFallTime - minFallTime)) /
+                                          speedSliderWidth;
                     lastFall = newFallTime;
                 }
             }
