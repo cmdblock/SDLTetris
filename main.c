@@ -253,8 +253,8 @@ void drawPreview(SDL_Renderer *renderer, Tetromino *piece) {
                 SDL_Rect rect = {(preview.x + j) * (blockSize + gap) + gap,
                                  (preview.y + i) * (blockSize + gap) + gap,
                                  blockSize, blockSize};
-                // 只绘制边框，使用当前方块的填充颜色
-                SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
+                // 只绘制边框，使用当前方块的填充颜色，但透明度为0
+                SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 0);
                 SDL_RenderDrawRect(renderer, &rect);
             }
         }
