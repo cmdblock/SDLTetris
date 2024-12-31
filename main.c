@@ -88,11 +88,11 @@ bool checkCollision(Tetromino *piece) {
 }
 
 // 游戏状态标志
-bool gameOver = false;       // 游戏是否结束
-bool isPaused = false;       // 游戏是否暂停
-bool inStartMenu = true;     // 是否在开始菜单界面
-bool inHelpMenu = false;     // 是否在帮助说明界面
-bool inSettingsMenu = false; // 在否在游戏设置界面
+bool gameOver = false;         // 游戏是否结束
+bool isPaused = false;         // 游戏是否暂停
+bool inStartMenu = true;       // 是否在开始菜单界面
+bool inHelpMenu = false;       // 是否在帮助说明界面
+bool inSettingsMenu = false;   // 在否在游戏设置界面
 bool inGameSelectMenu = false; // 是否在新游戏/加载游戏选择界面
 
 bool lockPiece() {
@@ -679,6 +679,7 @@ int main(int argv, char *args[]) {
             }
 
             continue; // 跳过游戏主逻辑
+        }
 
         // 处理新游戏/加载游戏选择界面
         if (inGameSelectMenu) {
@@ -761,9 +762,11 @@ int main(int argv, char *args[]) {
 
                         // 绘制按钮边框
                         if (isHovered) {
-                            SDL_SetRenderDrawColor(renderer, 100, 200, 255, 255);
+                            SDL_SetRenderDrawColor(renderer, 100, 200, 255,
+                                                   255);
                         } else {
-                            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                            SDL_SetRenderDrawColor(renderer, 255, 255, 255,
+                                                   255);
                         }
                         for (int i = 0; i < 2; i++) {
                             SDL_Rect borderRect = {
@@ -849,9 +852,11 @@ int main(int argv, char *args[]) {
 
                         // 绘制按钮边框
                         if (isHovered) {
-                            SDL_SetRenderDrawColor(renderer, 100, 255, 100, 255);
+                            SDL_SetRenderDrawColor(renderer, 100, 255, 100,
+                                                   255);
                         } else {
-                            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                            SDL_SetRenderDrawColor(renderer, 255, 255, 255,
+                                                   255);
                         }
                         for (int i = 0; i < 2; i++) {
                             SDL_Rect borderRect = {
@@ -896,7 +901,6 @@ int main(int argv, char *args[]) {
             }
 
             continue; // 跳过游戏主逻辑
-        }
         }
 
         // 设置界面
