@@ -14,7 +14,7 @@
 #define ARENA_HEIGHT 20 // 游戏区域的高度（方块数量）
 
 int score = 0; // 当前游戏分数
-Uint32 lastFall;
+Uint32 lastFall = 300; // 初始化为中间值 (100 + 500)/2
 
 // 俄罗斯方块结构体
 typedef struct {
@@ -919,8 +919,10 @@ int main(int argv, char *args[]) {
             // 计算当前速度对应的滑块位置 (左边慢500ms，右边快100ms)
             int minFallTime = 100; // 最快速度（右边）
             int maxFallTime = 500; // 最慢速度（左边）
-            int speedSliderPos = ((lastFall - minFallTime) * speedSliderWidth) /
-                                 (maxFallTime - minFallTime);
+            // 初始位置在中间，左边慢右边快
+            int speedSliderPos = speedSliderWidth - 
+                                ((lastFall - minFallTime) * speedSliderWidth) /
+                                (maxFallTime - minFallTime);
 
             // 绘制滑动条背景
             SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
@@ -947,8 +949,9 @@ int main(int argv, char *args[]) {
                     mouseX >= speedSliderX &&
                     mouseX <= speedSliderX + speedSliderWidth) {
                     // 计算新的下落间隔时间（左边慢，右边快）
+                    // 鼠标越靠右，下落速度越快
                     int newFallTime =
-                        minFallTime + ((mouseX - speedSliderX) *
+                        maxFallTime - ((mouseX - speedSliderX) *
                                        (maxFallTime - minFallTime)) /
                                           speedSliderWidth;
                     lastFall = newFallTime;
