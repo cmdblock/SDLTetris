@@ -253,9 +253,16 @@ void drawPreview(SDL_Renderer *renderer, Tetromino *piece) {
                 SDL_Rect rect = {(preview.x + j) * (blockSize + gap) + gap,
                                  (preview.y + i) * (blockSize + gap) + gap,
                                  blockSize, blockSize};
-                // 只绘制边框，使用当前方块的填充颜色，但透明度为0
+                // 绘制更粗的边框，使用当前方块的填充颜色，但透明度为0
                 SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 0);
-                SDL_RenderDrawRect(renderer, &rect);
+                // 绘制多个偏移的矩形来创建更粗的边框
+                for (int offset = 0; offset < 3; offset++) {
+                    SDL_Rect thickRect = {
+                        rect.x - offset, rect.y - offset,
+                        rect.w + offset * 2, rect.h + offset * 2
+                    };
+                    SDL_RenderDrawRect(renderer, &thickRect);
+                }
             }
         }
     }
