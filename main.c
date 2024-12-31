@@ -13,8 +13,8 @@
 #define ARENA_WIDTH 12 // 游戏区域（俄罗斯方块下落区域）的宽度（方块数量）
 #define ARENA_HEIGHT 20 // 游戏区域的高度（方块数量）
 
-int score = 0; // 当前游戏分数
-Uint32 lastFall = 300; // 初始化为中间值 (100 + 500)/2
+int score = 0;         // 当前游戏分数
+Uint32 lastFall = 300; // 方块下落速度, 初始化为中间值 (100 + 500)/2
 
 // 俄罗斯方块结构体
 typedef struct {
@@ -920,9 +920,9 @@ int main(int argv, char *args[]) {
             int minFallTime = 100; // 最快速度（右边）
             int maxFallTime = 500; // 最慢速度（左边）
             // 初始位置在中间，左边慢右边快
-            int speedSliderPos = speedSliderWidth - 
-                                ((lastFall - minFallTime) * speedSliderWidth) /
-                                (maxFallTime - minFallTime);
+            int speedSliderPos = speedSliderWidth -
+                                 ((lastFall - minFallTime) * speedSliderWidth) /
+                                     (maxFallTime - minFallTime);
 
             // 绘制滑动条背景
             SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
