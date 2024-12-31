@@ -237,8 +237,9 @@ void updateAnimation(float deltaTime) {
 
         // 动画持续0.5秒后结束
         if (clearAnim.timer >= 0.5f) {
-            // 动画结束，实际消除行
-            for (int i = 0; i < clearAnim.count; i++) {
+            // 动画结束，实际消除所有标记的行
+            // 从下往上消除，避免影响上面的行号
+            for (int i = clearAnim.count - 1; i >= 0; i--) {
                 int line = clearAnim.lines[i];
                 // 将当前行以上的所有行向下移动一行
                 for (int k = line; k > 0; k--) {
