@@ -201,11 +201,16 @@ const SDL_Color pieceColors[7] = {
     {255, 165, 0, 255}  // L型：橙色
 };
 
-void drawPiece(SDL_Renderer *renderer, Tetromino *piece) {
+void drawPiece(SDL_Renderer *renderer, Tetromino *piece, bool isPreview) {
     // 绘制当前方块
     SDL_Color color = pieceColors[piece->type];
     int blockSize = 24; // 每个小方块的实际大小
     int gap = 6;        // 方块之间的间隔
+
+    // 如果是预览方块，设置半透明颜色
+    if (isPreview) {
+        color.a = 128; // 设置50%透明度
+    }
 
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
@@ -216,9 +221,29 @@ void drawPiece(SDL_Renderer *renderer, Tetromino *piece) {
                 SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b,
                                        color.a);
                 SDL_RenderFillRect(renderer, &rect);
+
+                // 如果不是预览方块，绘制边框
+                if (!isPreview) {
+                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                    SDL_RenderDrawRect(renderer, &rect);
+                }
             }
         }
     }
+}
+
+void drawPreview(SDL_Renderer *renderer, Tetromino *piece) {
+    // 创建临时方块用于预览
+    Tetromino preview = *piece;
+    
+    // 模拟下落直到碰撞
+    while (!checkCollision(&preview)) {
+        preview.y++;
+    }
+    preview.y--; // 回退到最后有效位置
+    
+    // 绘制预览方块
+    drawPiece(renderer, &preview, true);
 }
 
 Mix_Chunk *clearSound = NULL; // 消除音效
@@ -1587,7 +1612,8 @@ int main(int argv, char *args[]) {
 
         // 绘制游戏区域、当前方块、分数和下一个方块预览
         drawArena(renderer);
-        drawPiece(renderer, &currentPiece);
+        drawPreview(renderer, &currentPiece); // 先绘制预览
+        drawPiece(renderer, &currentPiece, false); // 再绘制当前方块
         drawScore(renderer);
         drawNextPiece(renderer);
 
