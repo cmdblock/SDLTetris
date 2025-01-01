@@ -360,7 +360,7 @@ void drawNextPiece(SDL_Renderer *renderer) {
     int blockSize = 20;                   // 预览方块的大小
 
     // 绘制"Next Piece"文字
-    TTF_Font *font = TTF_OpenFont("simhei.ttf", 20);
+    TTF_Font *font = TTF_OpenFont("simhei.ttf", 30);
 
     if (font) {
         SDL_Color textColor = {255, 255, 255, 255};
@@ -400,7 +400,7 @@ void drawNextPiece(SDL_Renderer *renderer) {
     }
 
     // 绘制当前模式提示
-    TTF_Font *modeFont = TTF_OpenFont("simhei.ttf", 18);
+    TTF_Font *modeFont = TTF_OpenFont("simhei.ttf", 28);
     if (modeFont) {
         const char *modeText =
             blindMode ? "当前模式: 盲打模式" : "当前模式: 显示模式";
@@ -435,8 +435,8 @@ void drawScore(SDL_Renderer *renderer) {
     }
 
     // 加载支持中文的字体文件
-    // 使用24号字体大小
-    TTF_Font *font = TTF_OpenFont("simhei.ttf", 24);
+    // 使用36号字体大小
+    TTF_Font *font = TTF_OpenFont("simhei.ttf", 36);
     if (!font) {
         printf("Failed to load font: %s\n", TTF_GetError());
         return;
