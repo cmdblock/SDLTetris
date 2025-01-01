@@ -1267,6 +1267,9 @@ int main(int argv, char *args[]) {
                 }
             }
 
+            // 在设置界面，滑动下落速度滑动条下面，增加一行文字，文字的内容是："方块分数倍数",
+            // AI!
+
             // 更新屏幕
             SDL_RenderPresent(renderer);
 
