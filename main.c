@@ -13,7 +13,7 @@
 #define ARENA_WIDTH 12 // 游戏区域（俄罗斯方块下落区域）的宽度（方块数量）
 #define ARENA_HEIGHT 20 // 游戏区域的高度（方块数量）
 
-int score = 0;         // 当前游戏分数
+int score = 0;       // 当前游戏分数
 Uint32 lastFall = 0; // 记录上次下落时间
 Uint32 lastFallInterval = 300; // 方块下落间隔时间, 初始化为中间值 (100 + 500)/2
 
@@ -236,7 +236,7 @@ void drawPiece(SDL_Renderer *renderer, Tetromino *piece, bool isPreview) {
 void drawPreview(SDL_Renderer *renderer, Tetromino *piece) {
     // 创建临时方块用于预览
     Tetromino preview = *piece;
-    
+
     // 模拟下落直到碰撞
     while (!checkCollision(&preview)) {
         preview.y++;
@@ -258,10 +258,9 @@ void drawPreview(SDL_Renderer *renderer, Tetromino *piece) {
                 SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 0);
                 // 绘制多个偏移的矩形来创建更粗的边框
                 for (int offset = 0; offset < 3; offset++) {
-                    SDL_Rect thickRect = {
-                        rect.x - offset, rect.y - offset,
-                        rect.w + offset * 2, rect.h + offset * 2
-                    };
+                    SDL_Rect thickRect = {rect.x - offset, rect.y - offset,
+                                          rect.w + offset * 2,
+                                          rect.h + offset * 2};
                     SDL_RenderDrawRect(renderer, &thickRect);
                 }
             }
@@ -362,24 +361,7 @@ void drawNextPiece(SDL_Renderer *renderer) {
 
     // 绘制"Next Piece"文字
     TTF_Font *font = TTF_OpenFont("simhei.ttf", 20);
-    
-    // 绘制当前模式提示
-    TTF_Font *modeFont = TTF_OpenFont("simhei.ttf", 18);
-    if (modeFont) {
-        const char *modeText = blindMode ? "当前模式: 盲打模式" : "当前模式: 显示模式";
-        SDL_Color textColor = blindMode ? (SDL_Color){255, 100, 100, 255} : (SDL_Color){100, 255, 100, 255};
-        SDL_Surface *textSurface = TTF_RenderUTF8_Solid(modeFont, modeText, textColor);
-        if (textSurface) {
-            SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-            if (textTexture) {
-                SDL_Rect destRect = {previewX, previewY + 150, textSurface->w, textSurface->h};
-                SDL_RenderCopy(renderer, textTexture, NULL, &destRect);
-                SDL_DestroyTexture(textTexture);
-            }
-            SDL_FreeSurface(textSurface);
-        }
-        TTF_CloseFont(modeFont);
-    }
+
     if (font) {
         SDL_Color textColor = {255, 255, 255, 255};
         SDL_Surface *textSurface =
@@ -415,6 +397,29 @@ void drawNextPiece(SDL_Renderer *renderer) {
                 SDL_RenderDrawRect(renderer, &rect);
             }
         }
+    }
+
+    // 绘制当前模式提示
+    TTF_Font *modeFont = TTF_OpenFont("simhei.ttf", 18);
+    if (modeFont) {
+        const char *modeText =
+            blindMode ? "当前模式: 盲打模式" : "当前模式: 显示模式";
+        SDL_Color textColor = blindMode ? (SDL_Color){255, 100, 100, 255}
+                                        : (SDL_Color){100, 255, 100, 255};
+        SDL_Surface *textSurface =
+            TTF_RenderUTF8_Solid(modeFont, modeText, textColor);
+        if (textSurface) {
+            SDL_Texture *textTexture =
+                SDL_CreateTextureFromSurface(renderer, textSurface);
+            if (textTexture) {
+                SDL_Rect destRect = {previewX, previewY + 150, textSurface->w,
+                                     textSurface->h};
+                SDL_RenderCopy(renderer, textTexture, NULL, &destRect);
+                SDL_DestroyTexture(textTexture);
+            }
+            SDL_FreeSurface(textSurface);
+        }
+        TTF_CloseFont(modeFont);
     }
 }
 
@@ -864,7 +869,8 @@ int main(int argv, char *args[]) {
                                 srand(SDL_GetTicks());
                                 // 随机生成第一个下一个方块
                                 nextPiece.type = rand() % 7;
-                                memcpy(nextPiece.shape, tetrominoes[nextPiece.type],
+                                memcpy(nextPiece.shape,
+                                       tetrominoes[nextPiece.type],
                                        sizeof(nextPiece.shape));
                                 // 生成第一个当前方块
                                 newPiece();
@@ -1221,8 +1227,9 @@ int main(int argv, char *args[]) {
             int minFallTime = 100; // 最快速度（右边）
             int maxFallTime = 500; // 最慢速度（左边）
             // 初始位置在中间
-            int speedSliderPos = (speedSliderWidth * (maxFallTime - lastFallInterval)) / 
-                                (maxFallTime - minFallTime);
+            int speedSliderPos =
+                (speedSliderWidth * (maxFallTime - lastFallInterval)) /
+                (maxFallTime - minFallTime);
 
             // 绘制滑动条背景
             SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
@@ -1629,7 +1636,7 @@ int main(int argv, char *args[]) {
                 case SDLK_ESCAPE: // Esc键暂停/继续
                     isPaused = !isPaused;
                     break;
-                case SDLK_TAB:    // Tab键切换盲打模式
+                case SDLK_TAB: // Tab键切换盲打模式
                     blindMode = !blindMode;
                     break;
                 }
@@ -1654,15 +1661,15 @@ int main(int argv, char *args[]) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        // 绘制游戏区域、分数
+        // 绘制游戏区域、分数，显示模式
         drawArena(renderer);
         drawScore(renderer);
-        
+        drawNextPiece(renderer);
+
         // 如果不是盲打模式，绘制当前方块和预览
         if (!blindMode) {
-            drawPreview(renderer, &currentPiece); // 先绘制预览
+            drawPreview(renderer, &currentPiece);      // 先绘制预览
             drawPiece(renderer, &currentPiece, false); // 再绘制当前方块
-            drawNextPiece(renderer);
         }
 
         // 如果游戏暂停，绘制暂停界面
