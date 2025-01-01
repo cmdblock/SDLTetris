@@ -16,6 +16,7 @@
 int score = 0;       // 当前游戏分数
 Uint32 lastFall = 0; // 记录上次下落时间
 Uint32 lastFallInterval = 300; // 方块下落间隔时间, 初始化为中间值 (100 + 500)/2
+int scoreMultiplier = 3; // 分数倍数，默认值为3
 
 // 俄罗斯方块结构体
 typedef struct {
@@ -1301,7 +1302,6 @@ int main(int argv, char *args[]) {
 
             // 绘制5个按钮
             static int selectedButton = 2; // 默认选中第三个按钮（索引从0开始）
-            static int scoreMultiplier = 3; // 默认分数倍数为3
             for (int i = 0; i < 5; i++) {
                 int buttonX = startX + i * (buttonSize + buttonGap);
 
