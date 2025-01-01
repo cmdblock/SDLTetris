@@ -1298,6 +1298,7 @@ int main(int argv, char *args[]) {
             int buttonY = 450; // 在文字下方
 
             // 绘制5个按钮
+            static int selectedButton = 2; // 默认选中第三个按钮（索引从0开始）
             for (int i = 0; i < 5; i++) {
                 int buttonX = startX + i * (buttonSize + buttonGap);
 
@@ -1310,7 +1311,6 @@ int main(int argv, char *args[]) {
                                 mouseY >= buttonY && mouseY <= buttonY + buttonSize);
 
                 // 绘制按钮背景
-                static int selectedButton = -1; // 记录当前选中的按钮
                 if (isHovered || i == selectedButton) {
                     // 悬停或被选中时使用红色
                     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
