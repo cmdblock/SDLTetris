@@ -362,6 +362,24 @@ void drawNextPiece(SDL_Renderer *renderer) {
 
     // 绘制"Next Piece"文字
     TTF_Font *font = TTF_OpenFont("simhei.ttf", 20);
+    
+    // 绘制当前模式提示
+    TTF_Font *modeFont = TTF_OpenFont("simhei.ttf", 18);
+    if (modeFont) {
+        const char *modeText = blindMode ? "当前模式: 盲打模式" : "当前模式: 显示模式";
+        SDL_Color textColor = {255, 255, 255, 255};
+        SDL_Surface *textSurface = TTF_RenderUTF8_Solid(modeFont, modeText, textColor);
+        if (textSurface) {
+            SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+            if (textTexture) {
+                SDL_Rect destRect = {previewX, previewY + 150, textSurface->w, textSurface->h};
+                SDL_RenderCopy(renderer, textTexture, NULL, &destRect);
+                SDL_DestroyTexture(textTexture);
+            }
+            SDL_FreeSurface(textSurface);
+        }
+        TTF_CloseFont(modeFont);
+    }
     if (font) {
         SDL_Color textColor = {255, 255, 255, 255};
         SDL_Surface *textSurface =
