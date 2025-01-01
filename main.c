@@ -356,9 +356,10 @@ void clearLines() {
 void drawNextPiece(SDL_Renderer *renderer) {
     // 设置预览区域的位置和大小
     int rightPanelWidth = WINDOW_WIDTH - ARENA_WIDTH * 30; // 右侧面板宽度
-    int blockSize = 20;                   // 预览方块的大小
-    int previewX = ARENA_WIDTH * 30 + (rightPanelWidth - blockSize * 4) / 2; // 水平居中
-    int previewY = 100;                   // 在分数下方
+    int blockSize = 20; // 预览方块的大小
+    int previewX =
+        ARENA_WIDTH * 30 + (rightPanelWidth - blockSize * 4) / 2; // 水平居中
+    int previewY = 100; // 在分数下方
 
     // 绘制"Next Piece"文字
     TTF_Font *font = TTF_OpenFont("simhei.ttf", 30);
@@ -371,8 +372,8 @@ void drawNextPiece(SDL_Renderer *renderer) {
             SDL_Texture *textTexture =
                 SDL_CreateTextureFromSurface(renderer, textSurface);
             if (textTexture) {
-                SDL_Rect destRect = {previewX, previewY - 30, textSurface->w,
-                                     textSurface->h};
+                SDL_Rect destRect = {previewX - 30, previewY - 30,
+                                     textSurface->w, textSurface->h};
                 SDL_RenderCopy(renderer, textTexture, NULL, &destRect);
                 SDL_DestroyTexture(textTexture);
             }
@@ -387,7 +388,7 @@ void drawNextPiece(SDL_Renderer *renderer) {
         for (int j = 0; j < 4; j++) {
             if (nextPiece.shape[i][j]) {
                 SDL_Rect rect = {previewX + j * blockSize,
-                                 previewY + i * blockSize, blockSize,
+                                 30 + previewY + i * blockSize, blockSize,
                                  blockSize};
                 SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b,
                                        color.a);
