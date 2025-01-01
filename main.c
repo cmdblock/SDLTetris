@@ -367,7 +367,7 @@ void drawNextPiece(SDL_Renderer *renderer) {
     TTF_Font *modeFont = TTF_OpenFont("simhei.ttf", 18);
     if (modeFont) {
         const char *modeText = blindMode ? "当前模式: 盲打模式" : "当前模式: 显示模式";
-        SDL_Color textColor = {255, 255, 255, 255};
+        SDL_Color textColor = blindMode ? (SDL_Color){255, 100, 100, 255} : (SDL_Color){100, 255, 100, 255};
         SDL_Surface *textSurface = TTF_RenderUTF8_Solid(modeFont, modeText, textColor);
         if (textSurface) {
             SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
