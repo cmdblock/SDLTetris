@@ -490,7 +490,7 @@ void drawArena(SDL_Renderer *renderer) {
 
     for (int i = 0; i < ARENA_HEIGHT; i++) {
         for (int j = 0; j < ARENA_WIDTH; j++) {
-            if (arena[i][j]) {
+            if (arena[i][j] && !(blindMode && !clearAnim.isAnimating)) {
                 SDL_Rect rect = {j * (blockSize + gap) + gap,
                                  i * (blockSize + gap) + gap, blockSize,
                                  blockSize};
@@ -1666,11 +1666,9 @@ int main(int argv, char *args[]) {
         drawScore(renderer);
         drawNextPiece(renderer);
 
-        // 如果不是盲打模式，绘制当前方块和预览
-        if (!blindMode) {
-            drawPreview(renderer, &currentPiece);      // 先绘制预览
-            drawPiece(renderer, &currentPiece, false); // 再绘制当前方块
-        }
+        // 绘制当前方块和预览（盲打模式下也显示）
+        drawPreview(renderer, &currentPiece);      // 先绘制预览
+        drawPiece(renderer, &currentPiece, false); // 再绘制当前方块
 
         // 如果游戏暂停，绘制暂停界面
         if (isPaused && !gameOver) {
