@@ -402,8 +402,7 @@ void drawNextPiece(SDL_Renderer *renderer) {
     // 绘制当前模式提示
     TTF_Font *modeFont = TTF_OpenFont("simhei.ttf", 28);
     if (modeFont) {
-        const char *modeText =
-            blindMode ? "当前模式: 盲打模式" : "当前模式: 显示模式";
+        const char *modeText = blindMode ? "盲打模式" : "显示模式";
         SDL_Color textColor = blindMode ? (SDL_Color){255, 100, 100, 255}
                                         : (SDL_Color){100, 255, 100, 255};
         SDL_Surface *textSurface =
@@ -436,7 +435,7 @@ void drawScore(SDL_Renderer *renderer) {
 
     // 加载支持中文的字体文件
     // 使用36号字体大小
-    TTF_Font *font = TTF_OpenFont("simhei.ttf", 36);
+    TTF_Font *font = TTF_OpenFont("simhei.ttf", 28);
     if (!font) {
         printf("Failed to load font: %s\n", TTF_GetError());
         return;
@@ -621,7 +620,7 @@ int main(int argv, char *args[]) {
                     "俄罗斯方块玩法说明：",     "1. 使用 A 键向左移动方块",
                     "2. 使用 D 键向右移动方块", "3. 使用 S 键加速下落",
                     "4. 使用 W 键旋转方块",     "5. 填满一行即可消除得分",
-                    "6. 按 Esc 键暂停游戏"};
+                    "6. 按 Esc 键暂停游戏",     "7. 使用 Tab 键切换游戏模式"};
 
                 // 初始绘制位置
                 int yPos = 100;
