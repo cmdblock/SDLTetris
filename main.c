@@ -1290,9 +1290,68 @@ int main(int argv, char *args[]) {
                 TTF_CloseFont(scoreFont);
             }
 
-            // 在"方块分数倍数"文字下面绘制5个并排的正方形按钮，按钮上面没有文字，按钮的下面有文字，第1个按钮下面的文字是”1“，第2个按钮下面的文字是”2“,
-            // 第3个按钮下面的文字是”3“, 第4个按钮下面的文字是”4“,
-            // 第5个按钮下面的文字是”5“, AI!
+            // 绘制分数倍数按钮
+            int buttonSize = 50;
+            int buttonGap = 10;
+            int totalWidth = 5 * buttonSize + 4 * buttonGap;
+            int startX = (WINDOW_WIDTH - totalWidth) / 2;
+            int buttonY = 450; // 在文字下方
+
+            // 绘制5个按钮
+            for (int i = 0; i < 5; i++) {
+                int buttonX = startX + i * (buttonSize + buttonGap);
+
+                // 获取鼠标位置
+                int mouseX, mouseY;
+                SDL_GetMouseState(&mouseX, &mouseY);
+
+                // 检查鼠标是否在按钮上
+                bool isHovered = (mouseX >= buttonX && mouseX <= buttonX + buttonSize &&
+                                mouseY >= buttonY && mouseY <= buttonY + buttonSize);
+
+                // 绘制按钮背景
+                if (isHovered) {
+                    SDL_SetRenderDrawColor(renderer, 100, 200, 255, 255);
+                } else {
+                    SDL_SetRenderDrawColor(renderer, 50, 150, 255, 255);
+                }
+                SDL_Rect buttonRect = {buttonX, buttonY, buttonSize, buttonSize};
+                SDL_RenderFillRect(renderer, &buttonRect);
+
+                // 绘制按钮边框
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                SDL_RenderDrawRect(renderer, &buttonRect);
+
+                // 检测鼠标点击
+                if (SDL_GetMouseState(&mouseX, &mouseY) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+                    if (mouseX >= buttonX && mouseX <= buttonX + buttonSize &&
+                        mouseY >= buttonY && mouseY <= buttonY + buttonSize) {
+                        // 设置分数倍数 (i+1)
+                        score = score * (i + 1);
+                    }
+                }
+
+                // 绘制按钮下方的数字
+                TTF_Font *numFont = TTF_OpenFont("simhei.ttf", 24);
+                if (numFont) {
+                    char numText[2];
+                    snprintf(numText, sizeof(numText), "%d", i + 1);
+                    SDL_Color textColor = {255, 255, 255, 255};
+                    SDL_Surface *textSurface = TTF_RenderUTF8_Solid(numFont, numText, textColor);
+                    if (textSurface) {
+                        SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+                        if (textTexture) {
+                            SDL_Rect textRect = {buttonX + (buttonSize - textSurface->w)/2, 
+                                                buttonY + buttonSize + 5, 
+                                                textSurface->w, textSurface->h};
+                            SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+                            SDL_DestroyTexture(textTexture);
+                        }
+                        SDL_FreeSurface(textSurface);
+                    }
+                    TTF_CloseFont(numFont);
+                }
+            }
 
             // 更新屏幕
             SDL_RenderPresent(renderer);
