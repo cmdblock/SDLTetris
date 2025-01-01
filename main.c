@@ -1267,8 +1267,28 @@ int main(int argv, char *args[]) {
                 }
             }
 
-            // 在设置界面，滑动下落速度滑动条下面，增加一行文字，文字的内容是："方块分数倍数",
-            // AI!
+            // 绘制"方块分数倍数"提示
+            TTF_Font *scoreFont = TTF_OpenFont("simhei.ttf", 24);
+            if (scoreFont) {
+                SDL_Color textColor = {255, 255, 255, 255};
+                SDL_Surface *textSurface =
+                    TTF_RenderUTF8_Solid(scoreFont, "方块分数倍数", textColor);
+                if (textSurface) {
+                    SDL_Texture *textTexture =
+                        SDL_CreateTextureFromSurface(renderer, textSurface);
+                    if (textTexture) {
+                        int textWidth = textSurface->w;
+                        int textHeight = textSurface->h;
+                        SDL_Rect textRect = {(WINDOW_WIDTH - textWidth) / 2,
+                                             400, // 在速度滑动条下方
+                                             textWidth, textHeight};
+                        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+                        SDL_DestroyTexture(textTexture);
+                    }
+                    SDL_FreeSurface(textSurface);
+                }
+                TTF_CloseFont(scoreFont);
+            }
 
             // 更新屏幕
             SDL_RenderPresent(renderer);
