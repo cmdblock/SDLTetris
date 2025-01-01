@@ -335,21 +335,23 @@ void clearLines() {
         clearAnim.visible = true;
         clearAnim.isAnimating = true;
 
-        // 第四步：根据消除的行数更新分数
+        // 第四步：根据消除的行数更新分数，并应用分数倍数
+        int baseScore = 0;
         switch (clearAnim.count) {
         case 1:
-            score += 100;
+            baseScore = 100;
             break;
         case 2:
-            score += 300;
+            baseScore = 300;
             break;
         case 3:
-            score += 500;
+            baseScore = 500;
             break;
         case 4:
-            score += 800;
+            baseScore = 800;
             break;
         }
+        score += baseScore * scoreMultiplier;
     }
 }
 
@@ -1299,6 +1301,7 @@ int main(int argv, char *args[]) {
 
             // 绘制5个按钮
             static int selectedButton = 2; // 默认选中第三个按钮（索引从0开始）
+            static int scoreMultiplier = 3; // 默认分数倍数为3
             for (int i = 0; i < 5; i++) {
                 int buttonX = startX + i * (buttonSize + buttonGap);
 
@@ -1329,9 +1332,8 @@ int main(int argv, char *args[]) {
                 if (SDL_GetMouseState(&mouseX, &mouseY) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
                     if (mouseX >= buttonX && mouseX <= buttonX + buttonSize &&
                         mouseY >= buttonY && mouseY <= buttonY + buttonSize) {
-                        // 设置分数倍数 (i+1)
-                        score = score * (i + 1);
                         selectedButton = i; // 记录当前选中的按钮
+                        scoreMultiplier = i + 1; // 设置分数倍数为i+1
                     }
                 }
 
