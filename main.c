@@ -1310,9 +1310,12 @@ int main(int argv, char *args[]) {
                                 mouseY >= buttonY && mouseY <= buttonY + buttonSize);
 
                 // 绘制按钮背景
-                if (isHovered) {
-                    SDL_SetRenderDrawColor(renderer, 100, 200, 255, 255);
+                static int selectedButton = -1; // 记录当前选中的按钮
+                if (isHovered || i == selectedButton) {
+                    // 悬停或被选中时使用红色
+                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
                 } else {
+                    // 正常状态使用蓝色
                     SDL_SetRenderDrawColor(renderer, 50, 150, 255, 255);
                 }
                 SDL_Rect buttonRect = {buttonX, buttonY, buttonSize, buttonSize};
@@ -1328,6 +1331,7 @@ int main(int argv, char *args[]) {
                         mouseY >= buttonY && mouseY <= buttonY + buttonSize) {
                         // 设置分数倍数 (i+1)
                         score = score * (i + 1);
+                        selectedButton = i; // 记录当前选中的按钮
                     }
                 }
 
