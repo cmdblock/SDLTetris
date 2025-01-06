@@ -1,0 +1,83 @@
+@startuml
+start
+
+:初始化游戏;
+if (保存文件存在?) then (是)
+  :加载保存的游戏状态;
+else (否)
+  :初始化新游戏;
+endif
+
+while (游戏未结束?) is (是)
+  :生成新方块;
+  :保存当前游戏状态到历史记录;
+  
+  while (方块未锁定?) is (是)
+    :检查碰撞;
+    if (发生碰撞?) then (是)
+      :锁定方块;
+      :检查并清除完整行;
+      :更新分数;
+    else (否)
+      :更新方块位置;
+    endif
+  endwhile
+  
+  :更新动画效果;
+  :处理用户输入;
+endwhile
+
+:游戏结束;
+stop
+
+@enduml
+
+@startuml
+title 碰撞检测流程
+
+start
+:遍历方块4x4矩阵;
+if (当前位置有方块?) then (是)
+  :计算游戏区域坐标;
+  if (超出边界或碰撞?) then (是)
+    :返回true;
+  else (否)
+    :继续检查下一个位置;
+  endif
+else (否)
+  :继续检查下一个位置;
+endif
+
+if (所有位置检查完毕?) then (是)
+  :返回false;
+endif
+stop
+
+@enduml
+
+@startuml
+title 撤销操作流程
+
+start
+:计算要恢复的历史状态索引;
+:恢复游戏区域状态;
+:恢复当前方块;
+:恢复下一个方块;
+:恢复分数;
+stop
+
+@enduml
+
+@startuml
+title 动画更新流程
+
+start
+if (正在播放清除动画?) then (是)
+  :更新计时器;
+  if (达到切换时间?) then (是)
+    :切换可见状态;
+  endif
+endif
+stop
+
+@enduml
