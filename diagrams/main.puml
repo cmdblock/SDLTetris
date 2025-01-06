@@ -1,81 +1,86 @@
 @startuml
 start
 
-:初始化游戏;
-if (保存文件存在?) then (是)
-  :加载保存的游戏状态;
-else (否)
-  :初始化新游戏;
+:initGame();
+if (fopen("savegame.dat", "rb")) then (成功)
+  :fread()加载游戏状态;
+else (失败)
+  :memset()清空游戏区域;
+  :srand()初始化随机数;
 endif
 
-while (游戏未结束?) is (是)
-  :生成新方块;
-  :保存当前游戏状态到历史记录;
+while (!gameOver) is (是)
+  :newPiece();
+  :memcpy()保存状态到history;
   
-  while (方块未锁定?) is (是)
-    :检查碰撞;
-    if (发生碰撞?) then (是)
-      :锁定方块;
-      :检查并清除完整行;
-      :更新分数;
+  while (!checkCollision()) is (是)
+    :checkCollision(&currentPiece);
+    if (碰撞?) then (是)
+      :lockPiece();
+      :clearLines();
+      :updateScore();
     else (否)
-      :更新方块位置;
+      :updatePiecePosition();
     endif
   endwhile
   
-  :更新动画效果;
-  :处理用户输入;
+  :updateAnimation(deltaTime);
+  :handleInput();
 endwhile
 
-:游戏结束;
+:显示游戏结束画面;
 stop
 
 @enduml
 
 @startuml
-title 碰撞检测流程
+title checkCollision流程
 
 start
-:遍历方块4x4矩阵;
-if (当前位置有方块?) then (是)
-  :计算游戏区域坐标;
-  if (超出边界或碰撞?) then (是)
-    :返回true;
+:for (i = 0; i < 4; i++);
+:for (j = 0; j < 4; j++);
+if (piece->shape[i][j]) then (是)
+  :x = piece->x + j;
+  :y = piece->y + i;
+  if (x < 0 || x >= ARENA_WIDTH || y >= ARENA_HEIGHT) then (是)
+    :return true;
   else (否)
-    :继续检查下一个位置;
+    :继续循环;
   endif
 else (否)
-  :继续检查下一个位置;
+  :继续循环;
 endif
 
-if (所有位置检查完毕?) then (是)
-  :返回false;
+if (循环结束) then (是)
+  :return false;
 endif
 stop
 
 @enduml
 
 @startuml
-title 撤销操作流程
+title undoLastMove流程
 
 start
-:计算要恢复的历史状态索引;
-:恢复游戏区域状态;
-:恢复当前方块;
-:恢复下一个方块;
-:恢复分数;
+:restoreIndex = (historyIndex - 1 + HISTORY_SIZE) % HISTORY_SIZE;
+:memcpy(arena, history[restoreIndex].arena);
+:currentPiece = history[restoreIndex].currentPiece;
+:nextPiece = history[restoreIndex].nextPiece;
+:score = history[restoreIndex].score;
 stop
 
 @enduml
 
 @startuml
-title 动画更新流程
+title updateAnimation流程
 
 start
-if (正在播放清除动画?) then (是)
-  :更新计时器;
-  if (达到切换时间?) then (是)
-    :切换可见状态;
+if (clearAnim.isAnimating) then (是)
+  :clearAnim.timer += deltaTime;
+  if ((int)(clearAnim.timer * 10) % 2 == 0) then (是)
+    :clearAnim.visible = true;
+  else (否)
+    :clearAnim.visible = false;
   endif
 endif
 stop
